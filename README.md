@@ -64,19 +64,29 @@ The software can also analyze the dataset using the structure tensor approach.
 
 6.	Now, we are ready to visualize the data. In point of view, select XY and Axes. Check slice display on XY and scroll in the 3D window on the right. You should see the first slice of the data and bounding box. Play around with the slice number scrollbar and opacity scrollbar in the slice display window.
 
-![XY visualization](imgs/Figure_2.PNG)
+<p align="center">
+  <img src="imgs/Figure_2.PNG" alt="XY visualization"/>
+</p>
 
 7.	Leave the default parameters for tractography Lucas Kanade as is, leave seeds per pixel text box to 0.01, and click on the compute tracks LK button. It will take about a minute to compute. Click on the streamlines checkbox to visualize the streamlines.
 
-![Tractography algo params](imgs/Figure_3.PNG)
-![Streamlines visualization](imgs/Figure_4.PNG)
+<p align="center">
+  <img src="imgs/Figure_3.PNG" alt="Tractography algo params"/>
+</p>
+
+<p align="center">
+  <img src="imgs/Figure_4.PNG" alt="Streamlines visualization"/>
+</p>
 
 8. The 3D window should look similar to the one shown here.
-![Interactive visualization](imgs/Figure_6.PNG)
+<p align="center">
+  <img src="imgs/Figure_6.PNG" alt="Interactive visualization"/>
+</p>
 
 9. Colors can be selected from the colors ist drop down, and the Select tracks by Color option can be selected to selectively visualize streamline groups. 
-
-![Select visualization](imgs/Figure_5.PNG)
+<p align="center">
+  <img src="imgs/Figure_5.PNG" alt="Select visualization"/>
+</p>
 
 10. The clip option allows the user to show streamlines for a select number of slices above the currently displayed 2D XY slice. This number of slices during the clip option can be controlled with the slider provided below. Streamline opacity can be modified using a slider.
 
@@ -85,7 +95,9 @@ The software can also analyze the dataset using the structure tensor approach.
 ## Interactive Editing
 Interactive editing options are available to edit streamlines by the users. 
 
-![Interactive Editing](imgs/Figure_8.png)
+<p align="center">
+  <img src="imgs/Figure_8.PNG" alt="Interactive Editing"/>
+</p>
 
 Users can scroll to a specific slice. 
 In this window, the 3D visualization will default to parallel perspective for ensuring that the zoom factor is constant across all slices. 
