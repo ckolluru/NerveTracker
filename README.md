@@ -46,7 +46,7 @@ The software can also analyze the dataset using the structure tensor approach.
 <br />Clustering threshold is a metric that is used by the [Quickbundles algorithm](https://doi.org/10.3389%2Ffnins.2012.00175) to cluster streamlines to generate a compact representation and visualization of the tractogram. 
 
 ## App Demo
-1.	Open a terminal and activate the python virtual environment. Run python main.py to run the program with or without debugging/breakpoints.
+1.	Open a terminal and activate the conda environment. Run python main.py to run the program with or without debugging/breakpoints.
 
 2.	There is some sample data in the sample_data subfolder of the repo that we will use.
 
@@ -55,7 +55,7 @@ The software can also analyze the dataset using the structure tensor approach.
 4.	File > Mask Image for Seeds. Select the image inside the Mask Image sub folder in sample_data.
 
 5.	File > Enter Image Metadata \ XML. Add the following values.
-(imgs/Figure_7.PNG)
+![My Image](imgs/Figure_7.PNG)
 
 6.	Now, we are ready to visualize the data. In point of view, select XY and axes. Click on load mask image to memory. Check slice display on XY and scroll in the 3D window on the right. You should see the first slice of the data and bounding box. Play around with the slice number scrollbar and opacity scrollbar in the slice display window.
 
