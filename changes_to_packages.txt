@@ -1,0 +1,4 @@
+structure_tensor_python
+
+Line 262 of st3d.py, add this line to remove divide by zero warnings.
+l[l == 0] = sys.float_info.epsilon

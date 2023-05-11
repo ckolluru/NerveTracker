@@ -1,0 +1,8 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# VS code
+.vscode/
+
+# Pickle files
+pickle files/
