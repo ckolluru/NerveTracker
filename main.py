@@ -29,7 +29,6 @@ import pickle
 from dipy.segment.clustering import QuickBundles
 import scipy
 
-from create_maps import exportMaps
 import distinctipy
 from PIL import Image
 import os
@@ -327,36 +326,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		
 		self.statusBar().showMessage('Fascicle segmentation folder location saved', 2000)		
 	
-	def createMaps(self):
-		if self.fascicleSegmentationsPath is None:
-			msgBox = QMessageBox()
-			msgBox.setText("Fascicle segmentations folder path is not set, please set it first.")
-			msgBox.exec()
-			return None
+	# def createMaps(self):
+	# 	if self.fascicleSegmentationsPath is None:
+	# 		msgBox = QMessageBox()
+	# 		msgBox.setText("Fascicle segmentations folder path is not set, please set it first.")
+	# 		msgBox.exec()
+	# 		return None
 
-		text, ok = QInputDialog.getText(self, 'Export maps', 'Input spacing (in number of slices) between maps:')
-		if ok:
-			try:
-				spacing = int(text)
-			except:
-				msgBox = QMessageBox()
-				msgBox.setText("Could not convert value entered into integer, please try again.")
-				msgBox.exec()
-				return None
+	# 	text, ok = QInputDialog.getText(self, 'Export maps', 'Input spacing (in number of slices) between maps:')
+	# 	if ok:
+	# 		try:
+	# 			spacing = int(text)
+	# 		except:
+	# 			msgBox = QMessageBox()
+	# 			msgBox.setText("Could not convert value entered into integer, please try again.")
+	# 			msgBox.exec()
+	# 			return None
 
-		if self.streamlines is None:	  
-			msgBox = QMessageBox()
-			msgBox.setText("Streamlines need to be computed/loaded, please try again.")
-			msgBox.exec()
-			return None
+	# 	if self.streamlines is None:	  
+	# 		msgBox = QMessageBox()
+	# 		msgBox.setText("Streamlines need to be computed/loaded, please try again.")
+	# 		msgBox.exec()
+	# 		return None
 
-		if self.color is None:	  
-			msgBox = QMessageBox()
-			msgBox.setText("Streamlines need to be computed/loaded or colors need to be loaded, please try again.")
-			msgBox.exec()
-			return None
+	# 	if self.color is None:	  
+	# 		msgBox = QMessageBox()
+	# 		msgBox.setText("Streamlines need to be computed/loaded or colors need to be loaded, please try again.")
+	# 		msgBox.exec()
+	# 		return None
 
-		exportMaps(self.fascicleSegmentationsPath, self.streamlines, self.color, spacing, self.metadata['image_type'], self.metadata['num_images_to_read'], self.metadata['section_thickness'], self.metadata['pixel_size_xy'], self.metadata['y_size_pixels'])
+	# 	exportMaps(self.fascicleSegmentationsPath, self.streamlines, self.color, spacing, self.metadata['image_type'], self.metadata['num_images_to_read'], self.metadata['section_thickness'], self.metadata['pixel_size_xy'], self.metadata['y_size_pixels'])
 
 	def anatomicallyConstrainStreamlines(self):
 		if self.fascicleSegmentationsPath is None:

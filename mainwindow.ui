@@ -1820,22 +1820,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionExport_maps_of_fiber_groups</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>createMaps()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>583</x>
-     <y>496</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>tabWidget</sender>
    <signal>currentChanged(int)</signal>
    <receiver>MainWindow</receiver>
