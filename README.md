@@ -47,6 +47,9 @@ The software can also analyze the dataset using the structure tensor approach.
 
 ## App Demo
 1.	Open a terminal and activate the conda environment. Run python main.py to run the program with or without debugging/breakpoints.
+<p align="center">
+  <img src="imgs/Figure_1.PNG" alt="GUI"/>
+</p>
 ![GUI](imgs/Figure_1.PNG)
 
 2.	There is some sample data in the sample_data subfolder of the repo that we will use.
@@ -72,6 +75,7 @@ The software can also analyze the dataset using the structure tensor approach.
 ![Interactive visualization](imgs/Figure_6.PNG)
 
 9. Colors can be selected from the colors ist drop down, and the Select tracks by Color option can be selected to selectively visualize streamline groups. 
+
 ![Select visualization](imgs/Figure_5.PNG)
 
 10. The clip option allows the user to show streamlines for a select number of slices above the currently displayed 2D XY slice. This number of slices during the clip option can be controlled with the slider provided below. Streamline opacity can be modified using a slider.
