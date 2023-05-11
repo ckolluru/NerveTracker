@@ -50,7 +50,6 @@ The software can also analyze the dataset using the structure tensor approach.
 <p align="center">
   <img src="imgs/Figure_1.PNG" alt="GUI"/>
 </p>
-![GUI](imgs/Figure_1.PNG)
 
 2.	There is some sample data in the sample_data subfolder of the repo that we will use.
 
@@ -59,8 +58,9 @@ The software can also analyze the dataset using the structure tensor approach.
 4.	File > Mask Image for Seeds. Select the image inside the Mask Image sub folder in sample_data.
 
 5.	File > Enter Image Metadata \ XML. Add the following values.
-
-![XML image](imgs/Figure_7.PNG)
+<p align="center">
+  <img src="imgs/Figure_7.PNG" alt="XML image"/>
+</p>
 
 6.	Now, we are ready to visualize the data. In point of view, select XY and Axes. Check slice display on XY and scroll in the 3D window on the right. You should see the first slice of the data and bounding box. Play around with the slice number scrollbar and opacity scrollbar in the slice display window.
 
