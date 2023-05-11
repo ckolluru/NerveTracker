@@ -1248,7 +1248,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 	def convertStreamlinesToImageCooords(self):
 
-		print('Converting streamlines to image coordinates.')
+		self.statusBar().showMessage('Converting streamlines to image coordinates.')
   
 		# Convert streamlines in physical coordinates to image space
 		lin_T = self.affine[:3, :3].T.copy()
@@ -1272,7 +1272,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 	def convertStreamlinesToPhysCoords(self, streamlines_image_coords):
 		
-		print('Converting streamlines to physical coordinates.')
+		self.statusBar().showMessage('Converting streamlines to physical coordinates.')
   		
 		lin_T = self.affine[:3, :3].T.copy()
 		offset = self.affine[:3, 3].copy()

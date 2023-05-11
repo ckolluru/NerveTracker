@@ -58,7 +58,7 @@ class ACTClass(QtCore.QThread):
 	   
 		self.progressSignal.emit(0)
 		self.statusBarSignal.emit('Anatomically constrained tractography complete.')
-		self.completeSignal(1)
+		self.completeSignal.emit(1)
    
 	def get_streamlines_image_coords(self):
      
