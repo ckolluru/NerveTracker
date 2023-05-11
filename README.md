@@ -93,7 +93,7 @@ The software can also analyze the dataset using the structure tensor approach.
 11. Anatomically constrain streamlines button can be clicked to ensure that the tracts generated lie within fascicle regions. First, a stack containing fascicle segmentations should be provided using the File menu, Open Fascicle Segmentations folder option. 
 
 ## Interactive Editing
-Interactive editing options are available to edit streamlines by the users. 
+Interactive editing options are available to edit streamlines manually.
 
 <p align="center">
   <img src="imgs/Figure_8.png" alt="Interactive Editing"/>
