@@ -25,6 +25,7 @@ from tqdm import tqdm
 
 from optical_flow_module import OpticFlowClass
 from structure_tensor_module import StructureTensorClass
+from act_module import ACTClass
 import pickle
 from dipy.segment.clustering import QuickBundles
 import scipy
@@ -1222,38 +1223,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
   
 		fascicle_label_filelist = glob.glob(self.fascicleSegmentationsPath + '\\*.png')
 
-		print('Iterating over label images and checking if streamlines are moving out.')
-		# iterate over the set of label images, ignore the first slice
-		for k in tqdm(np.arange(1, num_images_to_process)):
-			label = Image.open(fascicle_label_filelist[k])
-			mask = np.array(label)
-			mask[mask != 0] = 1
-
-			# Go to each streamline and check if there is a point on the current slice index
-			for i in np.arange(len(streamlines_image_coords)):
-				current_streamline = streamlines_image_coords[i]
-				streamline_length = len(current_streamline)
-				z_index_of_first_point = current_streamline[0][2]
-
-				# Check if the z index of the first point in the streamline is greater than the current slice index
-				if z_index_of_first_point > k:
-					continue
-				else:
-					index_within_streamline_with_current_slice_index = k - z_index_of_first_point
-
-					# If a point exists in the current streamline with the same z index we are currently looking at
-					if index_within_streamline_with_current_slice_index < streamline_length:
-						x_coordinate = current_streamline[index_within_streamline_with_current_slice_index][0]
-						y_coordinate = current_streamline[index_within_streamline_with_current_slice_index][1]
-
-						if mask[y_coordinate, x_coordinate]:
-							continue
-						else:
-							streamlines_image_coords[i] = current_streamline[:index_within_streamline_with_current_slice_index]
-
-		# Convert from image coordinates back to physical coordinates, save to list of lists
-		self.convertStreamlinesToPhysCoords(streamlines_image_coords)
+		self.actThread = ACTClass(num_images_to_process, streamlines_image_coords, fascicle_label_filelist)
   
+		self.actThread.progressSignal.connect(self.progressUpdate)
+		self.actThread.progressMinimumSignal.connect(self.progressMinimum)
+		self.actThread.progressMaximumSignal.connect(self.progressMaximum)
+		self.actThread.completeSignal.connect(self.actComplete)
+		self.actThread.statusBarSignal.connect(self.statusBarMessage)
+		self.computeTracksLKButton.setEnabled(False)
+		self.computeTracksSTButton.setEnabled(False)
+		self.anatomicallyConstrainStreamlinesButton.setEnabled(False)
+		self.actThread.start()
+
+	def actComplete(self, value):
+     
+		if value == 1:
+			streamlines_image_coords = self.actThread.get_streamlines_image_coords()
+	
+			# Convert from image coordinates back to physical coordinates, save to list of lists
+			self.convertStreamlinesToPhysCoords(streamlines_image_coords)
+
+			self.actThread.terminate_thread()
+  
+
 	def convertStreamlinesToImageCooords(self):
 
 		print('Converting streamlines to image coordinates.')
