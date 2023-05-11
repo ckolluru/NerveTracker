@@ -361,6 +361,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		if self.fascicleSegmentationsPath is None:
 			msgBox = QMessageBox()
 			msgBox.setText("Fascicle segmentations folder path is not set, please set it first.")
+			msgBox.setWindowTitle("Error")
 			msgBox.exec()
 			return None
 
@@ -369,6 +370,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		if len(filelist) < self.metadata['num_images_to_read']:
 			msgBox = QMessageBox()
 			msgBox.setText("Number of masks in fascicles segmentations path is less than num_images_to_read field in metadata XML file.")
+			msgBox.setWindowTitle("Error")
 			msgBox.exec()
 			return None	
 
