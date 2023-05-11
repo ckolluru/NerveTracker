@@ -47,6 +47,7 @@ The software can also analyze the dataset using the structure tensor approach.
 
 ## App Demo
 1.	Open a terminal and activate the conda environment. Run python main.py to run the program with or without debugging/breakpoints.
+![GUI](imgs/Figure_1.PNG)
 
 2.	There is some sample data in the sample_data subfolder of the repo that we will use.
 
@@ -65,9 +66,10 @@ The software can also analyze the dataset using the structure tensor approach.
 7.	Leave the default parameters for tractography Lucas Kanade as is, leave seeds per pixel text box to 0.01, and click on the compute tracks LK button. It will take about a minute to compute. Click on the streamlines checkbox to visualize the streamlines.
 
 ![Tractography algo params](imgs/Figure_3.PNG)
-![Streamlines visualization](imgs/Figure_5.PNG)
+![Streamlines visualization](imgs/Figure_4.PNG)
 
 8. The 3D window should look similar to the one shown here.
 ![Interactive visualization](imgs/Figure_6.PNG)
 
 9. Colors can be selected from the colors ist drop down, and the Select tracks by Color option can be selected to selectively visualize streamline groups. 
+![Select visualization](imgs/Figure_5.PNG)
