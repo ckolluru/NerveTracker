@@ -266,6 +266,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.tracksStartingSliceIndex = self.findChild(QLineEdit, 'tracksStartingSliceIndex')  
 		self.forwardTrackingButton = self.findChild(QRadioButton, 'forwardTrackingButton')
 		self.backwardTrackingButton = self.findChild(QRadioButton, 'backwardTrackingButton')
+		self.forwardTrackingButton2 = self.findChild(QRadioButton, 'forwardTrackingButton2')
+		self.backwardTrackingButton2 = self.findChild(QRadioButton, 'backwardTrackingButton2')
 
 		# Validate inputs
 		winSizeValidator = QIntValidator(3, 1000, self.windowSize)
@@ -495,6 +497,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 			self.tabWidget.setTabEnabled(1, True)   
 			self.SceneManager.updateStreamlinesAndColors(self.streamlines, self.color)
+  
+			self.SceneManager.showAllTracks(self.streamlinesVisibilityCheckbox.isChecked())	
+			self.SceneManager.clipStreamlines(self.clipStreamlinescheckbox.isChecked(), self.clipStreamlinesSlider.value(), self.startSliceIndex)
 
 		if '_st_' in self.streamlinesPickleFile[0]:
 			self.trackingAlgoLK = 0
@@ -509,7 +514,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	def trackingDirection(self):
 		if not self.forwardTrackingButton.isChecked() and not self.backwardTrackingButton.isChecked():
 			self.sender().setChecked(True)
-
+   
+		if not self.forwardTrackingButton2.isChecked() and not self.backwardTrackingButton2.isChecked():
+			self.sender().setChecked(True)
+   
 	def clusterStreamlines(self, isChecked):
 	 	
 		if isChecked: 
@@ -590,6 +598,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.statusBar().showMessage('Reading metadata, creating XY image plane object for display..')
 		self.progressBar.setMinimum(0)
 		self.progressBar.setMaximum(self.metadata['num_images_to_read'])
+  
+		self.progressBar2.setMinimum(0)
+		self.progressBar2.setMaximum(self.metadata['num_images_to_read'])
 		
 		self.affine = np.eye(4)
 		self.affine[0, 0] = self.metadata['pixel_size_xy']
@@ -618,6 +629,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	def xySliderUpdate(self, value):
 		self.xySliceEdit.setText(str(value))
 		self.xySliceEdit2.setText(str(value))
+
+		# Update both slider positions
+		self.xySlider.setSliderPosition(value)
+		self.xySlider2.setSliderPosition(value)  
 
 		self.SceneManager.visualizeXYSlice(value, self.xySliceCheckBox.isChecked())		
 		self.SceneManager.clipStreamlines(self.clipStreamlinescheckbox.isChecked(), self.clipStreamlinesSlider.value(), value)
@@ -653,12 +668,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
   
 	def progressUpdate(self, value):
 		self.progressBar.setValue(value)  
+		self.progressBar2.setValue(value)  
   
 	def progressMinimum(self, value):
 		self.progressBar.setMinimum(value)
+		self.progressBar2.setMinimum(value)
   
 	def progressMaximum(self, value):
 		self.progressBar.setMaximum(value)
+		self.progressBar2.setMaximum(value)
   
 	def statusBarMessage(self, string):
 		self.statusBar().showMessage(string)
@@ -1042,7 +1060,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.opticFlowThread = OpticFlowClass(self.imagesPath, mask_image,
 											  self.affine, self.metadata, windowSize, maxLevel,
 											  seedsPerPixel, blur, self.startSliceIndex,
-											  self.forwardTrackingButton.isChecked(), self.backwardTrackingButton.isChecked())
+											  self.forwardTrackingButton2.isChecked(), self.backwardTrackingButton2.isChecked())
 		self.opticFlowThread.progressSignal.connect(self.progressUpdate)
 		self.opticFlowThread.progressMinimumSignal.connect(self.progressMinimum)
 		self.opticFlowThread.progressMaximumSignal.connect(self.progressMaximum)
@@ -1089,7 +1107,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.structureTensorThread = StructureTensorClass(self.imagesPath, mask_image,
 														self.affine, self.metadata, neighborhoodScale, noiseScale,
 														seedsPerPixel, downsampleFactor, self.startSliceIndex,
-														self.forwardTrackingButton.isChecked(), self.backwardTrackingButton.isChecked())
+														self.forwardTrackingButton2.isChecked(), self.backwardTrackingButton2.isChecked())
 		self.structureTensorThread.progressSignal.connect(self.progressUpdate)
 		self.structureTensorThread.progressMinimumSignal.connect(self.progressMinimum)
 		self.structureTensorThread.progressMaximumSignal.connect(self.progressMaximum)
@@ -1272,7 +1290,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
    
 			self.streamlines[k] = current_streamline 
    
-		self.SceneManager.updateStreamlinesAndColors(self.streamlines, self.color)
+		self.SceneManager.updateStreamlinesAndColors(self.streamlines, self.color)  
+  
+		self.SceneManager.showAllTracks(self.streamlinesVisibilityCheckbox.isChecked())	
+		self.SceneManager.clipStreamlines(self.clipStreamlinescheckbox.isChecked(), self.clipStreamlinesSlider.value(), self.startSliceIndex)
 
 	def getClusterStreamlinesAndColors(self, streamlines, colors):
 

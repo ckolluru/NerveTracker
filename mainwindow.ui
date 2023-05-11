@@ -60,7 +60,7 @@
        <enum>Qt::StrongFocus</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="visualizationTab">
        <attribute name="title">
@@ -840,7 +840,7 @@
          </rect>
         </property>
         <property name="text">
-         <string>Adding New Seeds/Tracks</string>
+         <string>Adding New Streamlines</string>
         </property>
        </widget>
        <widget class="QGroupBox" name="editingColorsBox">
@@ -898,7 +898,7 @@
           <x>0</x>
           <y>400</y>
           <width>231</width>
-          <height>80</height>
+          <height>121</height>
          </rect>
         </property>
         <property name="title">
@@ -908,7 +908,7 @@
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>20</y>
+           <y>50</y>
            <width>211</width>
            <height>23</height>
           </rect>
@@ -921,7 +921,7 @@
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>50</y>
+           <y>80</y>
            <width>211</width>
            <height>23</height>
           </rect>
@@ -930,25 +930,54 @@
           <string>Track with Structure Tensor</string>
          </property>
         </widget>
+        <widget class="QRadioButton" name="forwardTrackingButton2">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>82</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Forward</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="backwardTrackingButton2">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>20</y>
+           <width>82</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Backward</string>
+         </property>
+        </widget>
        </widget>
        <widget class="QLabel" name="removeExistingTracksLabel">
         <property name="geometry">
          <rect>
-          <x>60</x>
-          <y>500</y>
-          <width>121</width>
+          <x>40</x>
+          <y>530</y>
+          <width>151</width>
           <height>16</height>
          </rect>
         </property>
         <property name="text">
-         <string>Remove existing tracks</string>
+         <string>Removing Existing Streamlines</string>
         </property>
        </widget>
        <widget class="QPushButton" name="removeTracksThroughCurrentROIButton">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>530</y>
+          <y>560</y>
           <width>211</width>
           <height>23</height>
          </rect>
@@ -961,13 +990,26 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>570</y>
+          <y>600</y>
           <width>211</width>
           <height>23</height>
          </rect>
         </property>
         <property name="text">
          <string>Remvoe tracks arising from current ROI</string>
+        </property>
+       </widget>
+       <widget class="QProgressBar" name="progressBar2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>650</y>
+          <width>211</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="value">
+         <number>0</number>
         </property>
        </widget>
       </widget>
@@ -2068,6 +2110,38 @@
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>478</x>
+     <y>496</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>forwardTrackingButton2</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>trackingDirection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>61</x>
+     <y>480</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>478</x>
+     <y>496</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>backwardTrackingButton2</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>trackingDirection()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>181</x>
+     <y>480</y>
     </hint>
     <hint type="destinationlabel">
      <x>478</x>
