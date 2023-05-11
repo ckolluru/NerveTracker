@@ -73,3 +73,19 @@ The software can also analyze the dataset using the structure tensor approach.
 
 9. Colors can be selected from the colors ist drop down, and the Select tracks by Color option can be selected to selectively visualize streamline groups. 
 ![Select visualization](imgs/Figure_5.PNG)
+
+10. The clip option allows the user to show streamlines for a select number of slices above the currently displayed 2D XY slice. This number of slices during the clip option can be controlled with the slider provided below. Streamline opacity can be modified using a slider.
+
+11. Anatomically constrain streamlines button can be clicked to ensure that the tracts generated lie within fascicle regions. First, a stack containing fascicle segmentations should be provided using the File menu, Open Fascicle Segmentations folder option. 
+
+## Interactive Editing
+Interactive editing options are available to edit streamlines by the users. 
+
+![Interactive Editing](imgs/Figure_8.png)
+
+Users can scroll to a specific slice. 
+In this window, the 3D visualization will default to parallel perspective for ensuring that the zoom factor is constant across all slices. 
+
+The user can then select the draw region of interest (ROI) button and then start clicking on the image. A contour should be drawn which will be displayed in a red outline. If a new set of tracks need to be generated from this contour (ROI), a color can be selected. The list of current colors in the tracks are shown. If a new color needs to be created, a button is provided. Tracks can be added either using the structure tensor or Lucas Kanade approaches. 
+
+If tracks need to be deleted, two options are available. Either all tracks passing through this ROI can be deleted or only the portions of tracks originating from the ROI can be deleted.
