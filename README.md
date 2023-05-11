@@ -55,15 +55,15 @@ The software can also analyze the dataset using the structure tensor approach.
 4.	File > Mask Image for Seeds. Select the image inside the Mask Image sub folder in sample_data.
 
 5.	File > Enter Image Metadata \ XML. Add the following values.
-<br />
+
 ![XML image](imgs/Figure_7.PNG)
 
 6.	Now, we are ready to visualize the data. In point of view, select XY and Axes. Check slice display on XY and scroll in the 3D window on the right. You should see the first slice of the data and bounding box. Play around with the slice number scrollbar and opacity scrollbar in the slice display window.
-<br />
+
 ![XY visualization](imgs/Figure_2.PNG)
 
 7.	Leave the default parameters for tractography Lucas Kanade as is, leave seeds per pixel text box to 0.01, and click on the compute tracks LK button. It will take about a minute to compute. Click on the streamlines checkbox to visualize the streamlines.
-<br />
+
 ![Tractography algo params](imgs/Figure_3.PNG)
 ![Streamlines visualization](imgs/Figure_5.PNG)
 
