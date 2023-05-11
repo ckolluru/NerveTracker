@@ -98,15 +98,19 @@ def find_seed_points(mask_image, seeds_per_pixel):
 	return seed_point_coordinates, color
 
 # Transform from pixel space to physical space
-def tractogram(streamlines, affine, y_size_pixels):
+def tractogram(streamlines, affine, y_size_pixels, progressMinimumSignal, progressMaximumSignal, progressSignal, statusBarSignal):
 
 	streamlines_phys_coords = [None] * len(streamlines)
 	lin_T = affine[:3, :3].T.copy()
 	offset = affine[:3, 3].copy()
 
-	print('Transforming coordinates..')
+	statusBarSignal.emit('Transforming coordinates..')
+	progressMinimumSignal.emit(0)
+	progressMaximumSignal.emit(len(streamlines_phys_coords))
+	
 	for streamline_index in tqdm(np.arange(len(streamlines_phys_coords))):
 		
+		progressSignal.emit(streamline_index)
 		current_streamline_points = streamlines[streamline_index]
 		transformed_points = np.empty((len(current_streamline_points), 3))
 
@@ -120,4 +124,5 @@ def tractogram(streamlines, affine, y_size_pixels):
 
 		streamlines_phys_coords[streamline_index] = transformed_points
 
+	progressSignal.emit(0)
 	return streamlines_phys_coords

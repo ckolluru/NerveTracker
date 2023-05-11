@@ -1,6 +1,6 @@
 import sys
 
-from PyQt5.QtWidgets import QApplication, QWidget,QMainWindow,QFileDialog,QMessageBox,QSlider,QLineEdit,QCheckBox,QListWidget,QListWidgetItem,QAbstractItemView, QInputDialog, QTabWidget, QStyledItemDelegate, QPushButton, QRadioButton
+from PyQt5.QtWidgets import QApplication, QWidget,QMainWindow,QFileDialog,QMessageBox,QSlider,QLineEdit,QCheckBox,QListWidget,QListWidgetItem,QAbstractItemView, QInputDialog, QTabWidget, QStyledItemDelegate, QPushButton, QRadioButton,QProgressBar
 from PyQt5.QtWidgets import QApplication, QDialog, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFormLayout
 from PyQt5.QtGui import QColor, QIcon, QPen
 from PyQt5.QtWidgets import QStyle
@@ -268,7 +268,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.backwardTrackingButton = self.findChild(QRadioButton, 'backwardTrackingButton')
 		self.forwardTrackingButton2 = self.findChild(QRadioButton, 'forwardTrackingButton2')
 		self.backwardTrackingButton2 = self.findChild(QRadioButton, 'backwardTrackingButton2')
-
+  
+		# Progress Bar
+		self.progressBar = self.findChild(QProgressBar, 'progressBar')
+		self.progressBar2 = self.findChild(QProgressBar, 'progressBar2')
+  
 		# Validate inputs
 		winSizeValidator = QIntValidator(3, 1000, self.windowSize)
 		self.windowSize.setValidator(winSizeValidator)

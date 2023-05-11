@@ -85,13 +85,16 @@ class OpticFlowClass(QtCore.QThread):
 			for k in range(len(streamlines_backward)):
 				streamlines_backward[k].extend(streamlines_forward[k][1:])
 			
-			self.streamlines_phys_coords = tractogram(streamlines_backward, self.affine, self.metadata['y_size_pixels'])
+			self.streamlines_phys_coords = tractogram(streamlines_backward, self.affine, self.metadata['y_size_pixels'],
+                                             		  self.progressMinimumSignal, self.progressMaximumSignal, self.progressSignal, self.statusBarSignal)
 
 		elif not compute_forward and compute_backward:
-			self.streamlines_phys_coords = tractogram(streamlines_backward, self.affine, self.metadata['y_size_pixels'])
+			self.streamlines_phys_coords = tractogram(streamlines_backward, self.affine, self.metadata['y_size_pixels'],
+                                             		  self.progressMinimumSignal, self.progressMaximumSignal, self.progressSignal, self.statusBarSignal)
    
 		elif compute_forward and not compute_backward:
-			self.streamlines_phys_coords = tractogram(streamlines_forward, self.affine, self.metadata['y_size_pixels'])    			
+			self.streamlines_phys_coords = tractogram(streamlines_forward, self.affine, self.metadata['y_size_pixels'],
+                                             		  self.progressMinimumSignal, self.progressMaximumSignal, self.progressSignal, self.statusBarSignal)  			
   
 		self.statusBarSignal.emit('Tracking complete.')
 		self.completeSignal.emit(1)   
