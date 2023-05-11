@@ -105,3 +105,8 @@ In this window, the 3D visualization will default to parallel perspective for en
 The user can then select the draw region of interest (ROI) button and then start clicking on the image. A contour should be drawn which will be displayed in a red outline. If a new set of tracks need to be generated from this contour (ROI), a color can be selected. The list of current colors in the tracks are shown. If a new color needs to be created, a button is provided. Tracks can be added either using the structure tensor or Lucas Kanade approaches. 
 
 If tracks need to be deleted, two options are available. Either all tracks passing through this ROI can be deleted or only the portions of tracks originating from the ROI can be deleted.
+
+## Contributions
+If you use this code in your own work, please cite our paper.
+
+Kolluru C. et al. NerveTracker: a Python-based software toolkit for visualizing and tracking groups of nerve fibers in serial block-face MUSE images.
