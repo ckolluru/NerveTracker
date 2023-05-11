@@ -96,7 +96,7 @@ The software can also analyze the dataset using the structure tensor approach.
 Interactive editing options are available to edit streamlines by the users. 
 
 <p align="center">
-  <img src="imgs/Figure_8.PNG" alt="Interactive Editing"/>
+  <img src="imgs/Figure_8.png" alt="Interactive Editing"/>
 </p>
 
 Users can scroll to a specific slice. 
