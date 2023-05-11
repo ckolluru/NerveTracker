@@ -27,8 +27,11 @@ Tool for computing Dice overlap between the tractogram and a binary mask is avai
 ```conda activate tracking```
 
 ## Algorithms
+Along with the image stack, a binary mask is provided at an arbitrary slice. 
+<br />This mask indicates the regions of interest from which seed points will be sampled.
+<br />Seeds per pixel indicates the number of seed points that will be created (default 1 per 100, or 0.01). 
 
-<br />There are two options to run the tractography analysis, optic flow and structure tensor analysis.
+<br />SThere are two options to run the tractography analysis, optic flow and structure tensor analysis.
 <br />Parameters to both algorithms can be set by the user and default values are provided. 
 
 <br />The optic flow analysis uses the Lucas-Kanade algorithm, the specific implementation is from the opencv2 library. 
@@ -39,8 +42,6 @@ The software can also analyze the dataset using the structure tensor approach.
 <br />The images are down sampled in XY by a suitable integer factor to create near-isotropic voxels in XYZ.
 <br />An introduction to the structure tensor approach is available [here](http://people.compute.dtu.dk/vand/notes/ST_intro.pdf). 
 
-Seeds per pixel indicates the number of seed points that will be created. 
-<br />The default is one seed point every 100 pixels, or 0.01 seeds per pixel. 
 <br />Clustering threshold is a metric that is used by the [Quickbundles algorithm](https://doi.org/10.3389%2Ffnins.2012.00175) to cluster streamlines to generate a compact representation and visualization of the tractogram. 
 
 
