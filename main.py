@@ -504,7 +504,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			self.SceneManager.updateStreamlinesAndColors(self.streamlines, self.color)
   
 			self.SceneManager.showAllTracks(self.streamlinesVisibilityCheckbox.isChecked())	
-			self.SceneManager.clipStreamlines(self.clipStreamlinescheckbox.isChecked(), self.clipStreamlinesSlider.value(), self.startSliceIndex)
+			self.SceneManager.clipStreamlines(self.clipStreamlinescheckbox.isChecked(), self.clipStreamlinesSlider.value(), self.xySlider.value())
 
 		if '_st_' in self.streamlinesPickleFile[0]:
 			self.trackingAlgoLK = 0
@@ -1172,7 +1172,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.SceneManager.updateStreamlinesAndColors(self.streamlines, self.color)
   
 		self.SceneManager.showAllTracks(self.streamlinesVisibilityCheckbox.isChecked())	
-		self.SceneManager.clipStreamlines(self.clipStreamlinescheckbox.isChecked(), self.clipStreamlinesSlider.value(), self.startSliceIndex)
+		self.SceneManager.clipStreamlines(self.clipStreamlinescheckbox.isChecked(), self.clipStreamlinesSlider.value(), self.xySlider.value())
 	  
 		self.statusBar().showMessage('Deleted tracks passing through selected ROI', 3000)
   
@@ -1209,7 +1209,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.SceneManager.updateStreamlinesAndColors(self.streamlines, self.color)
   
 		self.SceneManager.showAllTracks(self.streamlinesVisibilityCheckbox.isChecked())	
-		self.SceneManager.clipStreamlines(self.clipStreamlinescheckbox.isChecked(), self.clipStreamlinesSlider.value(), self.startSliceIndex)
+		self.SceneManager.clipStreamlines(self.clipStreamlinescheckbox.isChecked(), self.clipStreamlinesSlider.value(), self.xySlider.value())
    
 		self.statusBar().showMessage('Deleted tracks arising from selected ROI', 3000)       
   
@@ -1243,7 +1243,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			# Convert from image coordinates back to physical coordinates, save to list of lists
 			self.convertStreamlinesToPhysCoords(streamlines_image_coords)
 
-			self.actThread.terminate_thread()
+			self.actThread.terminate_thread()	
+   	
+			self.computeTracksLKButton.setEnabled(True)
+			self.computeTracksSTButton.setEnabled(True)
+			self.anatomicallyConstrainStreamlinesButton.setEnabled(True)
   
 
 	def convertStreamlinesToImageCooords(self):
@@ -1289,7 +1293,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.SceneManager.updateStreamlinesAndColors(self.streamlines, self.color)  
   
 		self.SceneManager.showAllTracks(self.streamlinesVisibilityCheckbox.isChecked())	
-		self.SceneManager.clipStreamlines(self.clipStreamlinescheckbox.isChecked(), self.clipStreamlinesSlider.value(), self.startSliceIndex)
+		self.SceneManager.clipStreamlines(self.clipStreamlinescheckbox.isChecked(), self.clipStreamlinesSlider.value(), self.xySlider.value())
 
 	def getClusterStreamlinesAndColors(self, streamlines, colors):
 
