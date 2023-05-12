@@ -695,7 +695,28 @@ class SceneManager:
    		# We want perspective view in this window, the toggle function will toggle it.
 		self.parallelView = 1
 		self.toggleCameraParallelPerspective()
+  
+	def windowLevelAdjustments(self, value):
+     
+		if value:
+			# We want parallel view in this window, the toggle function will toggle it.
+			self.parallelView = 0
+			self.toggleCameraParallelPerspective() 
+	
+			# Visualize in the XY view
+			self.SetViewXY()
+	
+			# Change interactor style to image view
+			self.iren.SetInteractorStyle(vtk.vtkInteractorStyleImage())  
+   
+		else:		
+			# Change interactor style back to camera trackball
+			self.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
 
+			# We want perspective view in this window, the toggle function will toggle it.
+			self.parallelView = 1
+			self.toggleCameraParallelPerspective()
+  
 	def visualizeBoundingBox(self, enabled):
 	 
 		if self.bbActor is not None:

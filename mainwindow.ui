@@ -60,7 +60,7 @@
        <enum>Qt::StrongFocus</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="visualizationTab">
        <attribute name="title">
@@ -81,70 +81,49 @@
         <property name="title">
          <string>Point of view</string>
         </property>
-        <widget class="QRadioButton" name="radioButtonXY">
+        <widget class="QSplitter" name="splitter">
          <property name="geometry">
           <rect>
            <x>10</x>
            <y>20</y>
-           <width>41</width>
-           <height>20</height>
+           <width>201</width>
+           <height>17</height>
           </rect>
          </property>
-         <property name="text">
-          <string>XY</string>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>true</bool>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="radioButtonXZ">
-         <property name="geometry">
-          <rect>
-           <x>60</x>
-           <y>20</y>
-           <width>41</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>XZ</string>
-         </property>
-        </widget>
-        <widget class="QRadioButton" name="radioButtonYZ">
-         <property name="geometry">
-          <rect>
-           <x>110</x>
-           <y>20</y>
-           <width>41</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>YZ</string>
-         </property>
-        </widget>
-        <widget class="QCheckBox" name="checkVisualizeAxis">
-         <property name="geometry">
-          <rect>
-           <x>160</x>
-           <y>20</y>
-           <width>51</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Axis</string>
-         </property>
+         <widget class="QRadioButton" name="radioButtonXY">
+          <property name="text">
+           <string>XY</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <property name="autoExclusive">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QRadioButton" name="windowLevelButton">
+          <property name="text">
+           <string>Window/Level</string>
+          </property>
+          <property name="autoExclusive">
+           <bool>false</bool>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="checkVisualizeAxis">
+          <property name="text">
+           <string>Axis</string>
+          </property>
+         </widget>
         </widget>
        </widget>
        <widget class="QProgressBar" name="progressBar">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>830</y>
+          <x>0</x>
+          <y>840</y>
           <width>221</width>
           <height>23</height>
          </rect>
@@ -159,7 +138,7 @@
           <x>10</x>
           <y>90</y>
           <width>221</width>
-          <height>71</height>
+          <height>91</height>
          </rect>
         </property>
         <property name="title">
@@ -253,7 +232,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>170</y>
+          <y>190</y>
           <width>221</width>
           <height>111</height>
          </rect>
@@ -344,7 +323,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>590</y>
+          <y>610</y>
           <width>221</width>
           <height>121</height>
          </rect>
@@ -476,7 +455,7 @@
         <property name="geometry">
          <rect>
           <x>140</x>
-          <y>720</y>
+          <y>740</y>
           <width>81</width>
           <height>61</height>
          </rect>
@@ -486,7 +465,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>720</y>
+          <y>740</y>
           <width>131</width>
           <height>17</height>
          </rect>
@@ -499,7 +478,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>740</y>
+          <y>760</y>
           <width>101</width>
           <height>17</height>
          </rect>
@@ -525,7 +504,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>290</y>
+          <y>310</y>
           <width>221</width>
           <height>81</height>
          </rect>
@@ -590,7 +569,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>380</y>
+          <y>400</y>
           <width>221</width>
           <height>201</height>
          </rect>
@@ -742,7 +721,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>760</y>
+          <y>780</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -758,7 +737,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>790</y>
+          <y>810</y>
           <width>211</width>
           <height>23</height>
          </rect>
@@ -1542,22 +1521,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>radioButtonYZ</sender>
-   <signal>released()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>SetViewYZ()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>94</x>
-     <y>123</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>583</x>
-     <y>437</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>clipStreamlinesSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>MainWindow</receiver>
@@ -1662,22 +1625,6 @@
     <hint type="sourcelabel">
      <x>196</x>
      <y>641</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>583</x>
-     <y>437</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonXZ</sender>
-   <signal>released()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>SetViewXZ()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>94</x>
-     <y>103</y>
     </hint>
     <hint type="destinationlabel">
      <x>583</x>
@@ -2149,6 +2096,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>windowLevelButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>setWindowLevel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>126</x>
+     <y>80</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>478</x>
+     <y>496</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>OpenFolderImages()</slot>
@@ -2200,5 +2163,6 @@
   <slot>exportStreamlinesClusters()</slot>
   <slot>trackingDirection()</slot>
   <slot>compareTractograms()</slot>
+  <slot>setWindowLevel()</slot>
  </slots>
 </ui>

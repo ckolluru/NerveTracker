@@ -1400,6 +1400,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		msgBox.setText("Closest-neighbor based distance metric between provided tractograms: " + str(np.round(metric, 2)))
 		msgBox.exec()
 	
+	def setWindowLevel(self, value):
+		self.SceneManager.windowLevelAdjustments(value)
+  
 if __name__ == '__main__':
 
 	app = QApplication(sys.argv)
