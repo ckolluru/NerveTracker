@@ -1057,7 +1057,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			msgBox.setText("Color not selected, please select from list or click Add a new color button.")
 			msgBox.exec()
 			return None    
-
+  
 		# Start tracking from this slice and use image ROI as mask
 		mask_image = Image.open('user-selection.png')
 		mask_image = np.asarray(mask_image)

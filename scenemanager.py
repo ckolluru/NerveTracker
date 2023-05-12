@@ -74,6 +74,7 @@ class SceneManager:
 		self.orient.SetEnabled(0)
   
 		self.contourWidget = None
+		self.vtkInteractorStyleImageObject = None
 
 	def SetViewXY(self):		
 		camera = self.ren.GetActiveCamera()
@@ -705,11 +706,20 @@ class SceneManager:
 	
 			# Visualize in the XY view
 			self.SetViewXY()
-	
+
+			# An object for the Interactor Style Image class, usable if we want its window level property in the future.
+			# GetWindowLevelCurrentPosition for example
+			self.vtkInteractorStyleImageObject = vtk.vtkInteractorStyleImage()
+   
 			# Change interactor style to image view
-			self.iren.SetInteractorStyle(vtk.vtkInteractorStyleImage())  
+			self.iren.SetInteractorStyle(self.vtkInteractorStyleImageObject)  
    
 		else:		
+      
+			# win, lev = self.vtkInteractorStyleImageObject.GetWindowLevelCurrentPosition()
+			# print('Current Window: ', win)
+			# print('Current Level: ', lev)
+   
 			# Change interactor style back to camera trackball
 			self.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
 
