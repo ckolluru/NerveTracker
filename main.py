@@ -548,7 +548,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			qb = QuickBundles(threshold = float(self.clusteringThresholdLineEdit.text()))
 			self.clusters = qb.cluster(streamlines_for_clustering)
    
-			self.SceneManager.visualizeClusters(self.clusters, colors_for_clustering, isChecked, self.streamlinesVisibilityCheckbox.isChecked())
+			self.SceneManager.visualizeClusters(isChecked, self.streamlinesVisibilityCheckbox.isChecked(), self.clusters, colors_for_clustering)
+		else:
+			self.SceneManager.visualizeClusters(isChecked, self.streamlinesVisibilityCheckbox.isChecked())
+
 
 		self.statusBar().showMessage('Visualizing cluster bundles complete.', 2000)
 

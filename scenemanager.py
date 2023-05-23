@@ -310,7 +310,7 @@ class SceneManager:
 		most_frequent_row = array[largest_count_id]
 		return most_frequent_row
 
-	def visualizeClusters(self, clusters, color, isChecked, streamlinesVisibilityChecked):
+	def visualizeClusters(self, isChecked, streamlinesVisibilityChecked, clusters = None, color= None):
 	 
 		if isChecked:   
 			clusterColors = np.empty((len(clusters.centroids), 3))
@@ -341,8 +341,6 @@ class SceneManager:
 			self.clustersActor.SetMapper(self.clusters_poly_mapper)
 			self.clustersActor.GetProperty().SetLineWidth(3)
 			self.clustersActor.GetProperty().SetOpacity(1)
-
-			self.clustersActor.GetProperty().SetRenderLinesAsTubes(1)
 			
 			self.ren.AddActor(self.clustersActor)
 
