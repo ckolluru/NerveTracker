@@ -566,13 +566,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.SceneManager.SetViewXY()
 
 	def SetViewXZ(self):
-		# Ensure UI is sync (if view was selected from menu)
-		self.radioButtonXZ.setChecked(True)
 		self.SceneManager.SetViewXZ()
 
 	def SetViewYZ(self):
-		# Ensure UI is sync (if view was selected from menu)
-		self.radioButtonYZ.setChecked(True)
 		self.SceneManager.SetViewYZ()
 
 	def Snapshot(self):
