@@ -1400,7 +1400,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		msgBox.exec()
 	
 	def setWindowLevel(self, value):
-		self.SceneManager.windowLevelAdjustments(value)
+     
+		if value:
+			self.SceneManager.windowLevelAdjustments(value)
+		else:
+			reply = QMessageBox()
+			reply.setWindowTitle('Confirmation')
+			reply.setText("Do you want to keep current window/level settings? If not, window/level will revert to original.")
+			reply.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+			x = reply.exec()
+
+			if x == QMessageBox.StandardButton.Yes:
+				self.SceneManager.windowLevelAdjustments(value, True)
+			else:
+				self.SceneManager.windowLevelAdjustments(value, False)
+       
   
 if __name__ == '__main__':
 

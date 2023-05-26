@@ -695,7 +695,7 @@ class SceneManager:
 		self.parallelView = 1
 		self.toggleCameraParallelPerspective()
   
-	def windowLevelAdjustments(self, value):
+	def windowLevelAdjustments(self, value, keepCurrentWinLev=False):
      
 		if value:
 			# We want parallel view in this window, the toggle function will toggle it.
@@ -713,10 +713,18 @@ class SceneManager:
 			self.iren.SetInteractorStyle(self.vtkInteractorStyleImageObject)  
    
 		else:		
-      
-			# win, lev = self.vtkInteractorStyleImageObject.GetWindowLevelCurrentPosition()
-			# print('Current Window: ', win)
-			# print('Current Level: ', lev)
+			
+			if not keepCurrentWinLev:
+				ip = vtk.vtkImageProperty()
+				ip.SetColorWindow(255)
+				ip.SetColorLevel(128)
+				ip.SetAmbient(0.0)
+				ip.SetDiffuse(1.0)
+				ip.SetOpacity(1.0)
+				ip.SetInterpolationTypeToLinear()
+
+				self.XYSliceActor.SetProperty(ip)
+				self.XYSliceActor.Update()
    
 			# Change interactor style back to camera trackball
 			self.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
