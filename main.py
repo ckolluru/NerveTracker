@@ -1406,7 +1406,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		else:
 			reply = QMessageBox()
 			reply.setWindowTitle('Confirmation')
-			reply.setText("Do you want to keep current window/level settings? If not, window/level will revert to original.")
+			reply.setText("Do you want to keep current window/level settings? \nIf not, window/level will revert to original.")
 			reply.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
 			x = reply.exec()
 
