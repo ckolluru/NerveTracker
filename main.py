@@ -215,6 +215,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.color = None
 		self.mask_image = None
 		self.trackingAlgoLK = 0
+		self.trackingAlgoST = 0
 		self.clusters = None
 		self.userSelectedColor = None
 		self.startSliceIndex = None
@@ -424,7 +425,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
  
 		if self.trackingAlgoLK:
 			self.SceneManager.exportStreamlinesAndColorsLK(self.windowSize.text(), self.maxLevel.text(), self.seedsPerPixel.text(), self.blur.text(), sample_name)
-		else:
+		if self.trackingAlgoST:
 			self.SceneManager.exportStreamlinesAndColorsST(self.neighborhoodScale.text(), self.noiseScale.text(), self.seedsPerPixel.text(), self.downsampleFactor, sample_name)
 
 		self.statusBar().showMessage('Saved streamlines and colors data into pickle files folder.', 2000)
@@ -443,7 +444,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
  
 		if self.trackingAlgoLK:
 			self.SceneManager.exportStreamlinesClustersLK(self.windowSize.text(), self.maxLevel.text(), self.seedsPerPixel.text(), self.blur.text(), sample_name)
-		else:
+		if self.trackingAlgoST:
 			self.SceneManager.exportStreamlinesClustersST(self.neighborhoodScale.text(), self.noiseScale.text(), self.seedsPerPixel.text(), self.downsampleFactor, sample_name)
 
 		self.statusBar().showMessage('Saved streamline clusters into pickle files folder.', 2000)
@@ -507,9 +508,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			self.SceneManager.clipStreamlines(self.clipStreamlinescheckbox.isChecked(), self.clipStreamlinesSlider.value(), self.xySlider.value())
 
 		if '_st_' in self.streamlinesPickleFile[0]:
+			self.trackingAlgoST = 1
 			self.trackingAlgoLK = 0
 		else:
 			self.trackingAlgoLK = 1 
+			self.trackingAlgoST = 0
 
 	def visualizeBoundingBox(self, value):
 		
@@ -719,10 +722,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			self.statusBar().showMessage('Tracks calculated', 5000)
 	
 			if value == 1:
+				self.trackingAlgoST = 0
 				self.trackingAlgoLK = 1
-
-			if value == 2:
+			else:
 				self.trackingAlgoLK = 0
+				self.trackingAlgoST = 1
 	
 			if self.color is not None and self.streamlines is not None:
 				# Enable the interactive editing tab 
@@ -1012,9 +1016,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			self.statusBar().showMessage('Tracks calculated', 5000)
 		
 			if value == 1:
+				self.trackingAlgoST = 0
 				self.trackingAlgoLK = 1
-			if value == 2:
+			else:
 				self.trackingAlgoLK = 0
+				self.trackingAlgoST = 1
 
 			# Remove contour
 			self.SceneManager.removeContour()

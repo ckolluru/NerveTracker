@@ -7,7 +7,6 @@ import glob
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from structure_tensor_module import *
 from tractogram_functions import find_seed_points, tractogram
 from PyQt5 import QtCore
 
