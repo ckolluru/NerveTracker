@@ -643,6 +643,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			self.SceneManager.updateStreamlinesAndColors(self.streamlines, self.color)
 			self.SceneManager.createStreamlinesActor()
 			self.SceneManager.visualizeStreamlines(self.streamlinesVisibilityCheckbox.isChecked())
+   
+			self.SceneManager.removeClustersActor()
+			self.SceneManager.updateClusters(self.streamlineClusters, self.streamlineClustersColors)
+			self.SceneManager.createClustersActor()
+			self.SceneManager.visualizeClusters(self.clusterCheckbox.isChecked())
 
 			self.selectTracksListWidget.selectionModel().clear()
   
