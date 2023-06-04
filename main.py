@@ -569,6 +569,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			msgBox = QMessageBox()
 			msgBox.setText("Streamlines not created, click compute tracks button or load existing streamlines file.")
 			msgBox.exec()
+			self.streamlinesVisibilityCheckbox.setChecked(False)
 			return None
 
 		self.SceneManager.visualizeStreamlines(value)

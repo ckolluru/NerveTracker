@@ -325,26 +325,27 @@ class SceneManager:
 	# Create an actor for the clusters
 	def createClustersActor(self):
 
-		# Poly data with lines and colors
-		poly_data, color_is_scalar = lines_to_vtk_polydata(self.streamlineClusters.centroids, self.streamlineClustersColors)
+		if self.streamlineClusters is not None:
+			# Poly data with lines and colors
+			poly_data, color_is_scalar = lines_to_vtk_polydata(self.streamlineClusters.centroids, self.streamlineClustersColors)
 
-		self.clusters_poly_mapper = vtk.vtkPolyDataMapper()
-		self.clusters_poly_mapper.SetInputData(poly_data)
-		self.clusters_poly_mapper.ScalarVisibilityOn()
-		self.clusters_poly_mapper.SetScalarModeToUsePointFieldData()
-		self.clusters_poly_mapper.SelectColorArray("colors")
-		self.clusters_poly_mapper.Update()
+			self.clusters_poly_mapper = vtk.vtkPolyDataMapper()
+			self.clusters_poly_mapper.SetInputData(poly_data)
+			self.clusters_poly_mapper.ScalarVisibilityOn()
+			self.clusters_poly_mapper.SetScalarModeToUsePointFieldData()
+			self.clusters_poly_mapper.SelectColorArray("colors")
+			self.clusters_poly_mapper.Update()
 
-		self.clustersActor = vtk.vtkLODActor()
-		self.clustersActor.SetNumberOfCloudPoints(10000)
-		self.clustersActor.GetProperty().SetPointSize(3)
-		self.clustersActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2,
-						-self.extent_y*self.pixel_size_xy / 2,
-						-self.extent_z*self.section_thickness / 2)
+			self.clustersActor = vtk.vtkLODActor()
+			self.clustersActor.SetNumberOfCloudPoints(10000)
+			self.clustersActor.GetProperty().SetPointSize(3)
+			self.clustersActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2,
+							-self.extent_y*self.pixel_size_xy / 2,
+							-self.extent_z*self.section_thickness / 2)
 
-		self.clustersActor.SetMapper(self.clusters_poly_mapper)
-		self.clustersActor.GetProperty().SetLineWidth(3)
-		self.clustersActor.GetProperty().SetOpacity(1)
+			self.clustersActor.SetMapper(self.clusters_poly_mapper)
+			self.clustersActor.GetProperty().SetLineWidth(3)
+			self.clustersActor.GetProperty().SetOpacity(1)
 	
 	# Remove the clusters from the renderer if exists
 	def removeClustersActor(self):
@@ -357,10 +358,11 @@ class SceneManager:
 	# Visualize clusters based on checkbox value
 	def visualizeClusters(self, isChecked):
 
-		if isChecked:
-			self.ren.AddActor(self.clustersActor)
-		else:
-			self.ren.RemoveActor(self.clustersActor)
+		if self.clustersActor is not None:
+			if isChecked:
+				self.ren.AddActor(self.clustersActor)
+			else:
+				self.ren.RemoveActor(self.clustersActor)
 		
 		self.window.Render()
 		self.iren.ReInitialize()
