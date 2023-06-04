@@ -336,7 +336,7 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="blurLineEdit">
+                    <widget class="QLineEdit" name="blurEdit">
                      <property name="text">
                       <string>2</string>
                      </property>
@@ -383,7 +383,7 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="neighborhoodScaleLineEdit">
+                    <widget class="QLineEdit" name="neighborhoodScaleEdit">
                      <property name="text">
                       <string>5</string>
                      </property>
@@ -417,7 +417,7 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="noiseScaleLineEdit">
+                    <widget class="QLineEdit" name="noiseScaleEdit">
                      <property name="text">
                       <string>1</string>
                      </property>
@@ -498,7 +498,7 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="clusteringThresholdLineEdit">
+                    <widget class="QLineEdit" name="clusteringThresholdEdit">
                      <property name="text">
                       <string>100</string>
                      </property>
@@ -617,9 +617,9 @@
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_2">
                    <item>
-                    <widget class="QCheckBox" name="clipStreamlinescheckbox">
+                    <widget class="QCheckBox" name="streamlinesVisibilityCheckbox">
                      <property name="text">
-                      <string>Clip </string>
+                      <string>Streamlines</string>
                      </property>
                     </widget>
                    </item>
@@ -637,9 +637,9 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="streamlinesVisibilityCheckbox">
+                    <widget class="QCheckBox" name="clipStreamlinesCheckbox">
                      <property name="text">
-                      <string>Streamlines</string>
+                      <string>Clip </string>
                      </property>
                     </widget>
                    </item>
@@ -657,7 +657,7 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="clusterCheckBox">
+                    <widget class="QCheckBox" name="clusterCheckbox">
                      <property name="text">
                       <string>Cluster</string>
                      </property>
@@ -701,7 +701,7 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="clipStreamlinesLineEdit">
+                    <widget class="QLineEdit" name="clipStreamlinesEdit">
                      <property name="text">
                       <string>1</string>
                      </property>
@@ -772,26 +772,19 @@
                    <item>
                     <layout class="QVBoxLayout" name="verticalLayout_2">
                      <item>
-                      <widget class="QCheckBox" name="showAllTracksCheckBox">
-                       <property name="text">
-                        <string>Show all tracks</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QCheckBox" name="selectTracksByColorCheckBox">
+                      <widget class="QCheckBox" name="selectTracksByColorCheckbox">
                        <property name="text">
                         <string>Select tracks by color</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="boundingBoxCheckBox">
+                      <widget class="QCheckBox" name="boundingBoxCheckbox">
                        <property name="text">
                         <string>Bounding Box</string>
                        </property>
                        <property name="checked">
-                        <bool>true</bool>
+                        <bool>false</bool>
                        </property>
                       </widget>
                      </item>
@@ -1686,7 +1679,7 @@
   </connection>
   <connection>
    <sender>XYSliceEdit2</sender>
-   <signal>returnPressed()</signal>
+   <signal>textChanged(QString)</signal>
    <receiver>MainWindow</receiver>
    <slot>xySliceEdit_changed()</slot>
    <hints>
@@ -1894,7 +1887,7 @@
   </connection>
   <connection>
    <sender>XYSliceEdit</sender>
-   <signal>returnPressed()</signal>
+   <signal>textChanged(QString)</signal>
    <receiver>MainWindow</receiver>
    <slot>xySliceEdit_changed()</slot>
    <hints>
@@ -1957,7 +1950,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>boundingBoxCheckBox</sender>
+   <sender>boundingBoxCheckbox</sender>
    <signal>stateChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>visualizeBoundingBox()</slot>
@@ -2005,7 +1998,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>clipStreamlinesLineEdit</sender>
+   <sender>clipStreamlinesEdit</sender>
    <signal>returnPressed()</signal>
    <receiver>MainWindow</receiver>
    <slot>clipStreamlinesEdit_changed()</slot>
@@ -2037,7 +2030,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>clipStreamlinescheckbox</sender>
+   <sender>clipStreamlinesCheckbox</sender>
    <signal>stateChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>clipStreamlines()</slot>
@@ -2053,7 +2046,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>clusterCheckBox</sender>
+   <sender>clusterCheckbox</sender>
    <signal>stateChanged(int)</signal>
    <receiver>MainWindow</receiver>
    <slot>clusterStreamlines()</slot>
@@ -2149,30 +2142,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>selectTracksByColorCheckBox</sender>
+   <sender>selectTracksByColorCheckbox</sender>
    <signal>stateChanged(int)</signal>
    <receiver>MainWindow</receiver>
-   <slot>visualizeTracksByColor()</slot>
+   <slot>visualizeStreamlinesByColor()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>105</x>
      <y>832</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>547</x>
-     <y>533</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>showAllTracksCheckBox</sender>
-   <signal>stateChanged(int)</signal>
-   <receiver>MainWindow</receiver>
-   <slot>showAllTracks()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>105</x>
-     <y>809</y>
     </hint>
     <hint type="destinationlabel">
      <x>547</x>
@@ -2198,7 +2175,7 @@
   </connection>
   <connection>
    <sender>streamlinesVisibilityCheckbox</sender>
-   <signal>stateChanged(int)</signal>
+   <signal>toggled(bool)</signal>
    <receiver>MainWindow</receiver>
    <slot>visualizeStreamlines()</slot>
    <hints>
@@ -2254,7 +2231,6 @@
   <slot>SetViewXZ()</slot>
   <slot>SetViewYZ()</slot>
   <slot>Snapshot()</slot>
-  <slot>ToggleVisibility(bool)</slot>
   <slot>OpenMaskImageForSeeds()</slot>
   <slot>LoadImages()</slot>
   <slot>OpenImageMetadataXML()</slot>
@@ -2271,8 +2247,6 @@
   <slot>clipStreamlinesEdit_changed()</slot>
   <slot>createVectorFields()</slot>
   <slot>vectorFieldCheckbox()</slot>
-  <slot>visualizeTracksByColor()</slot>
-  <slot>showAllTracks()</slot>
   <slot>exportStreamlinesAndColors()</slot>
   <slot>parallelPerspectiveViewButton()</slot>
   <slot>computeTracksST()</slot>
@@ -2296,5 +2270,6 @@
   <slot>trackingDirection()</slot>
   <slot>compareTractograms()</slot>
   <slot>setWindowLevel()</slot>
+  <slot>visualizeStreamlinesByColor()</slot>
  </slots>
 </ui>

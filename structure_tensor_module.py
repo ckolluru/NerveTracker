@@ -57,6 +57,7 @@ class StructureTensorClass(QtCore.QThread):
 		# Find seed point coordinates, colors
 		self.seed_point_coordinates, self.color = find_seed_points(self.mask_image, self.seedsPerPixel)
   
+  	# Structure tensor analysis - set up VOIs to process, merge streamlines when done
 	def run(self):
 
 		streamlines_forward = []
@@ -109,7 +110,8 @@ class StructureTensorClass(QtCore.QThread):
 
 		self.statusBarSignal.emit('Tracking complete.')		
 		self.completeSignal.emit(2) 
-  	
+ 	
+  	# Run the algorithm one chunk at a time
 	def get_streamlines(self, startSliceIndex, stopSliceIndex, direction):
      
 		# Streamlines variable (image space coordinates)
@@ -267,11 +269,13 @@ class StructureTensorClass(QtCore.QThread):
 				break
 
 		return streamlines
-
+	
+ 	# Return streamlines and colors back to the main window for display
 	def get_streamlines_and_colors(self):
      
 		return self.streamlines_phys_coords, self.color	
-
+	
+ 	# Stop the thread
 	def terminate_thread(self):
 		
 		self.quit()

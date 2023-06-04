@@ -98,6 +98,7 @@ class OpticFlowClass(QtCore.QThread):
 		self.statusBarSignal.emit('Tracking complete.')
 		self.completeSignal.emit(1)   
    
+	# Run the algorithm from one slice to another
 	def get_streamlines(self, startSliceIndex, stopSliceIndex, direction):
      
      	# Streamlines variable (image space coordinates)
@@ -175,11 +176,13 @@ class OpticFlowClass(QtCore.QThread):
 			self.progressSignal.emit(i if direction == 1 else (startSliceIndex - i))
    
 		return streamlines
-			
+	
+	# Return streamlines and colors back to the main window for display
 	def get_streamlines_and_colors(self):
      
 		return self.streamlines_phys_coords, self.color
 
+	# Stop the thread
 	def terminate_thread(self):
 		
 		self.quit()

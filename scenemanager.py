@@ -1,23 +1,14 @@
 import vtk
-from vtkmodules.util import numpy_support
 import datetime
 import numpy as np
-from vtk_helper_functions import numpy_to_vtk_points, numpy_to_vtk_cells, numpy_to_vtk_colors, lines_to_vtk_polydata
+from vtk_helper_functions import lines_to_vtk_polydata
 import pickle
 import os
-from PIL import Image
 import math
-import glob
 
 class SceneManager:
 
 	def __init__(self, vtkWidget=None):
-		# self.ren = vtk.vtkRenderer()
-		# self.window = vtkWidget.GetRenderWindow()
-		# self.window.AddRenderer(self.ren)
-		# self.iren = self.window.GetInteractor()
-		# self.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
-		# self.iren.Initialize()  
   
 		# The renderers, render window and interactor
 		renderers = list()
@@ -27,10 +18,12 @@ class SceneManager:
 		renderers.append(vtk.vtkRenderer())
 		self.window.AddRenderer(renderers[0])
   
+		# The second renderer
 		self.ren = vtk.vtkRenderer()
 		renderers.append(self.ren)
 		self.window.AddRenderer(self.ren)
 
+		# Interactor style
 		self.iren = self.window.GetInteractor()
 		self.iren.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
 		self.iren.Initialize()  
@@ -40,42 +33,50 @@ class SceneManager:
 		renderers[0].SetBackground(colors.GetColor3d("White"))
 		renderers[0].SetLayer(0)
   
-		# Layer 1 - the background is transparent
-		#           so we only see the layer 0 background color
+		# Layer 1 - the background is transparent, so we only see the layer 0 background color
 		renderers[1].SetLayer(1)
 
 		#  We have two layers
 		self.window.SetNumberOfLayers(2)    
 
-		self.streamlinesActor = None
-
+		# Variables
 		self.streamlines = None
 		self.color = None
 		self.streamlineClusters = None
 		self.streamlineClustersColors = None
-		self.clustersActor = None
-		self.parallelView = 0
   
+		# Actors
+		self.clustersActor = None		
+		self.streamlinesActor = None
+		self.bbActor = None
+		self.XYSliceActor = None
+		self.streamline_poly_mapper = None
+     
+		# Visualization, metadata
+		self.parallelView = 0  
 		self.extent_x = None
 		self.extent_y = None
 		self.extent_z = None
-		self.bbACtor = None
+		self.pixel_size_xy = None
+		self.section_thickness = None
 
 		# Create orientation axes
 		axes = vtk.vtkAxesActor()
 		axes.SetShaftTypeToCylinder()
 
 		self.orient = vtk.vtkOrientationMarkerWidget()
-		self.orient.SetOrientationMarker( axes )
-		self.orient.SetInteractor( self.iren )
-		self.orient.SetViewport( 0.0, 0.0, 0.2, 0.2 )
-		self.orient.SetEnabled(1)		# Needed to set InteractiveOff
+		self.orient.SetOrientationMarker(axes)
+		self.orient.SetInteractor(self.iren)
+		self.orient.SetViewport(0.0, 0.0, 0.2, 0.2)
+		self.orient.SetEnabled(1)		
 		self.orient.InteractiveOff()
 		self.orient.SetEnabled(0)
   
+		# Contouor widget, interactor object for window/level adjustments
 		self.contourWidget = None
 		self.vtkInteractorStyleImageObject = None
 
+	# Set view to XY
 	def SetViewXY(self):		
 		camera = self.ren.GetActiveCamera()
    
@@ -101,6 +102,7 @@ class SceneManager:
 		self.iren.ReInitialize()   
 		self.window.Render()
 
+	# Set view to XZ
 	def SetViewXZ(self):     
      
 		camera = self.ren.GetActiveCamera()
@@ -127,6 +129,7 @@ class SceneManager:
 		self.iren.ReInitialize()   
 		self.window.Render()
 
+	# Set view to YZ
 	def SetViewYZ(self):
 
 		camera = self.ren.GetActiveCamera()
@@ -162,6 +165,7 @@ class SceneManager:
 		# camera.SetFocalPoint(0.0,0.0,0)
 		# self.window.Render()
 
+	# Take a snapshot of the viewer and save to disk
 	def Snapshot(self):
 		wintoim=vtk.vtkWindowToImageFilter()
 		self.window.Render()
@@ -174,23 +178,19 @@ class SceneManager:
 		snapshot.SetInputConnection(0,wintoim.GetOutputPort())
 		snapshot.Write()
 
+	# Visualize axis based on checkbox value
 	def ToggleVisualizeAxis(self, visible):
-		self.orient.SetEnabled(1)		# Needed to set InteractiveOff
+     
+     	# Needed to set InteractiveOff
+		self.orient.SetEnabled(1)		
 		self.orient.InteractiveOff()
 		self.orient.SetEnabled(visible)
 		self.window.Render()
 
-	def ToggleVisibility(self, visibility):
-		# iterate through and set each visibility
-		props = self.ren.GetViewProps()
-		props.InitTraversal()
-		for i in range(props.GetNumberOfItems()):
-			props.GetNextProp().SetVisibility(visibility)
+	# Create the actor displaying the XY slice
+	def createXYSliceActor(self, imagesPath, pixel_size_xy, section_thickness, x_size_pixels, y_size_pixels, num_images_to_read):
 		
-		self.window.Render()
-
-	def addImageDataActor(self, imagesPath, pixel_size_xy, section_thickness, x_size_pixels, y_size_pixels, num_images_to_read):
-		
+		# Update metadata
 		self.extent_x = x_size_pixels - 1
 		self.extent_y = y_size_pixels - 1
 		self.extent_z = num_images_to_read - 1
@@ -198,7 +198,7 @@ class SceneManager:
 		self.pixel_size_xy = pixel_size_xy
 		self.section_thickness = section_thickness
 
-		# PNG (working)
+		# PNG dataasets
 		reader = vtk.vtkPNGReader()
 		reader.SetFilePrefix(imagesPath + '\\') 
 		reader.SetFilePattern('%sImage_%05d.png')
@@ -206,58 +206,19 @@ class SceneManager:
 		reader.SetDataSpacing(pixel_size_xy, pixel_size_xy, section_thickness)
 		reader.SetDataScalarTypeToUnsignedChar()
 		reader.SetNumberOfScalarComponents(1)
-  
-		#VTK-HDF experiment
-		# reader = vtk.vtkHDFReader()
-		# reader.SetFileName(imagesPath + '\\stack.hdf')
-		# reader.Update()    
-		# outDS = reader.GetOutput()
-		# outDS.GetPointData().SetScalars(outDS.GetPointData().GetArray("PNGImage"))
-
-		#NRRD
-		# filename = glob.glob(imagesPath + '\*.nrrd')
-		# reader = vtk.vtkNrrdReader()
-		# reader.SetFileName(filename[0]) 
-		# reader.SetDataExtent(0, self.extent_x, 0, self.extent_y, 0, self.extent_z)
-		# reader.SetDataSpacing(pixel_size_xy, pixel_size_xy, section_thickness)
-		# reader.SetDataScalarTypeToUnsignedChar()
-		# reader.SetNumberOfScalarComponents(1)
-		# reader.SetFileDimensionality(3)
-		# reader.FileLowerLeftOn()
-   
-		#NIFTI
-		# reader = vtk.vtkNIFTIImageReader()
-		# reader.SetFileName(imagesPath[0])
-		# reader.SetDataExtent(0, self.extent_x, 0, self.extent_y, 0, self.extent_z)
-		# reader.SetDataSpacing(pixel_size_xy, pixel_size_xy, section_thickness)
-		# reader.FileLowerLeftOff()
-		# reader.SetDataScalarTypeToUnsignedChar()
-		# reader.SetNumberOfScalarComponents(1)
-		# reader.SetFileDimensionality(3)
-
-		# data_extent = reader.GetDataExtent()
-		# dimensionality = reader.GetFileDimensionality()
-		# type = reader.GetDataScalarType()
-  
-  
-		#TIFF
-		# reader = vtk.vtkTIFFReader()
-		# reader.SetFileName(imagesPath[0])
-		# reader.SetDataExtent(0, self.extent_x, 0, self.extent_y, 0, self.extent_z)
-		# reader.SetDataSpacing(pixel_size_xy, pixel_size_xy, section_thickness)
-		# reader.SpacingSpecifiedFlagOn()
-		# reader.OriginSpecifiedFlagOn()
-		# reader.SetOrientationType(3)
 	
+		# Extract VOI (first slice in stack)
 		self.imageXY = vtk.vtkExtractVOI()
 		self.imageXY.SetInputConnection(reader.GetOutputPort())
 		self.imageXY.SetVOI(0, self.extent_x, 0, self.extent_y, 0, 0)
 		self.imageXY.Update()
   
+		# Set up an imageActor
 		self.XYSliceActor = vtk.vtkImageActor()
 		self.XYSliceActor.SetPosition(-self.extent_x*pixel_size_xy / 2, -self.extent_y*pixel_size_xy / 2, -self.extent_z*section_thickness / 2)
 		self.XYSliceActor.GetMapper().SetInputConnection(self.imageXY.GetOutputPort())
-		  
+		
+		# Set look up table and properties
 		ip = vtk.vtkImageProperty()
 		ip.SetColorWindow(255)
 		ip.SetColorLevel(128)
@@ -265,14 +226,46 @@ class SceneManager:
 		ip.SetDiffuse(1.0)
 		ip.SetOpacity(1.0)
 		ip.SetInterpolationTypeToLinear()
-
+		
+		# Update the actor, ready for display
 		self.XYSliceActor.SetProperty(ip)
 		self.XYSliceActor.Update()
+  
+  	# Remove the XY slice from the renderer	
 	
-	def addStreamlinesActor(self, streamlines, color):
+	# Remove the XY slice actor from the renderer if exists
+	def removeXYSliceActor(self):
+	
+		if self.XYSliceActor is not None:		 
+			self.ren.RemoveActor(self.XYSliceActor)
+  
+		self.window.Render() 
+	
+	# Visualize the XY slice based on checkbox value and xy slice number from GUI
+	def visualizeXYSlice(self, value, isChecked):		
+		self.imageXY.SetVOI(0, self.extent_x, 0, self.extent_y, value, value)
+
+		if isChecked:
+			self.ren.AddActor(self.XYSliceActor)
+		else:
+			self.ren.RemoveActor(self.XYSliceActor)
+
+		self.window.Render()
+		self.iren.ReInitialize()
+
+	# Manipulate XY slice opacity
+	def opacityXYSlice(self, value):
+     
+		if self.XYSliceActor is not None:
+			self.XYSliceActor.GetProperty().SetOpacity(value / 100)
+
+		self.window.Render()
+      
+	# Create the actor displaying the streamlines
+	def createStreamlinesActor(self):
 
 		# Poly data with lines and colors
-		poly_data, color_is_scalar = lines_to_vtk_polydata(streamlines, color)
+		poly_data, color_is_scalar = lines_to_vtk_polydata(self.streamlines, self.color)
 
 		self.streamline_poly_mapper = vtk.vtkPolyDataMapper()
 		self.streamline_poly_mapper.SetInputData(poly_data)
@@ -292,15 +285,34 @@ class SceneManager:
 		self.streamlinesActor.GetProperty().SetLineWidth(1)
 		self.streamlinesActor.GetProperty().SetOpacity(0.7)
 
-		self.streamlines = streamlines
-		self.color = color
-
+	# Remove the streamlines from the renderer if exists
 	def removeStreamlinesActor(self):
 	
-		if self.streamlinesActor is not None:
-		 
+		if self.streamlinesActor is not None:		 
 			self.ren.RemoveActor(self.streamlinesActor)
    
+		self.window.Render() 
+
+	# Visualize streamlines based on checkbox value
+	def visualizeStreamlines(self, isChecked):
+
+		if isChecked:
+			self.ren.AddActor(self.streamlinesActor)
+		else:
+			self.ren.RemoveActor(self.streamlinesActor)
+		
+		self.window.Render()
+		self.iren.ReInitialize()
+
+	# Manipulate streamline opacity
+	def opacityStreamlines(self, value):
+
+		if self.streamlinesActor is not None: 
+			self.streamlinesActor.GetProperty().SetOpacity(value / 100)
+
+		self.window.Render()
+       
+	# Utility function to get the most common color in a list of colors
 	def mode_rows(self, array):
 		array = np.ascontiguousarray(array)
 		void_dt = np.dtype((np.void, array.dtype.itemsize * np.prod(array.shape[1:])))
@@ -310,89 +322,64 @@ class SceneManager:
 		most_frequent_row = array[largest_count_id]
 		return most_frequent_row
 
-	def visualizeClusters(self, isChecked, streamlinesVisibilityChecked, clusters = None, color= None):
-	 
-		if isChecked:   
-			clusterColors = np.empty((len(clusters.centroids), 3))
+	# Create an actor for the clusters
+	def createClustersActor(self):
 
-			for k in np.arange(len(clusters.centroids)):
-				clusterColors[k,:] = self.mode_rows(color[clusters[k].indices, :])
+		# Poly data with lines and colors
+		poly_data, color_is_scalar = lines_to_vtk_polydata(self.streamlineClusters.centroids, self.streamlineClustersColors)
 
-			self.streamlineClusters = clusters.centroids
-			self.streamlineClustersColors = clusterColors
+		self.clusters_poly_mapper = vtk.vtkPolyDataMapper()
+		self.clusters_poly_mapper.SetInputData(poly_data)
+		self.clusters_poly_mapper.ScalarVisibilityOn()
+		self.clusters_poly_mapper.SetScalarModeToUsePointFieldData()
+		self.clusters_poly_mapper.SelectColorArray("colors")
+		self.clusters_poly_mapper.Update()
+
+		self.clustersActor = vtk.vtkLODActor()
+		self.clustersActor.SetNumberOfCloudPoints(10000)
+		self.clustersActor.GetProperty().SetPointSize(3)
+		self.clustersActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2,
+						-self.extent_y*self.pixel_size_xy / 2,
+						-self.extent_z*self.section_thickness / 2)
+
+		self.clustersActor.SetMapper(self.clusters_poly_mapper)
+		self.clustersActor.GetProperty().SetLineWidth(3)
+		self.clustersActor.GetProperty().SetOpacity(1)
+	
+	# Remove the clusters from the renderer if exists
+	def removeClustersActor(self):
+	
+		if self.clustersActor is not None:		 
+			self.ren.RemoveActor(self.clustersActor)   
    
-			# Poly data with lines and colors
-			poly_data, color_is_scalar = lines_to_vtk_polydata(clusters.centroids, clusterColors)
+		self.window.Render() 
 
-			self.clusters_poly_mapper = vtk.vtkPolyDataMapper()
-			self.clusters_poly_mapper.SetInputData(poly_data)
-			self.clusters_poly_mapper.ScalarVisibilityOn()
-			self.clusters_poly_mapper.SetScalarModeToUsePointFieldData()
-			self.clusters_poly_mapper.SelectColorArray("colors")
-			self.clusters_poly_mapper.Update()
-
-			self.clustersActor = vtk.vtkLODActor()
-			self.clustersActor.SetNumberOfCloudPoints(10000)
-			self.clustersActor.GetProperty().SetPointSize(3)
-			self.clustersActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2,
-							-self.extent_y*self.pixel_size_xy / 2,
-							-self.extent_z*self.section_thickness / 2)
-
-			self.clustersActor.SetMapper(self.clusters_poly_mapper)
-			self.clustersActor.GetProperty().SetLineWidth(3)
-			self.clustersActor.GetProperty().SetOpacity(1)
-			
-			self.ren.AddActor(self.clustersActor)
-
-		else:
-			if self.clustersActor is not None:		 
-				self.ren.RemoveActor(self.clustersActor)
-		
-		self.visualizeStreamlines(streamlinesVisibilityChecked)
-		self.window.Render()
-  
-	def visualizeXYSlice(self, value, isChecked):		
-		self.imageXY.SetVOI(0, self.extent_x, 0, self.extent_y, value, value)
+	# Visualize clusters based on checkbox value
+	def visualizeClusters(self, isChecked):
 
 		if isChecked:
-			self.ren.AddActor(self.XYSliceActor)
+			self.ren.AddActor(self.clustersActor)
 		else:
-			self.ren.RemoveActor(self.XYSliceActor)
-
-		self.window.Render()
-		self.window.Render()
-		self.iren.ReInitialize()
-
-	def opacityXYSlice(self, value):
-		self.XYSliceActor.GetProperty().SetOpacity(value / 100)
-
-		self.window.Render()
-
-	def visualizeStreamlines(self, value):
-
-		if value:
-			self.ren.AddActor(self.streamlinesActor)
-		else:
-			self.ren.RemoveActor(self.streamlinesActor)
+			self.ren.RemoveActor(self.clustersActor)
 		
 		self.window.Render()
-
-	def opacityStreamlines(self, value):
-
-		if self.streamlinesActor is not None: 
-			self.streamlinesActor.GetProperty().SetOpacity(value / 100)
-
-		self.window.Render()
-
+		self.iren.ReInitialize()
+     
+	# Manipulate cluster opacity
 	def opacityClusters(self, value):
 
 		if self.clustersActor is not None:
 			self.clustersActor.GetProperty().SetOpacity(value / 100)
 
-		self.window.Render()
+		self.window.Render() 
+  
+	# Clip streamlines and clusters from current z slice
+	def clipStreamlines(self, isChecked, value, z, ieTabSelected):
 
-	def clipStreamlines(self, isChecked, value, z):
-
+		if ieTabSelected:
+			isChecked = True
+			value = 5
+   
 		if self.streamlinesActor is not None:
 
 			if isChecked:
@@ -410,7 +397,7 @@ class SceneManager:
 				self.streamlinesActor.GetMapper().AddClippingPlane(top_clipping_plane)		
 			else:
 				self.streamlinesActor.GetMapper().RemoveAllClippingPlanes()
-	
+   
 		if self.clustersActor is not None:
 
 			if isChecked:
@@ -428,34 +415,24 @@ class SceneManager:
 				self.clustersActor.GetMapper().AddClippingPlane(top_clipping_plane)		
 			else:
 				self.clustersActor.GetMapper().RemoveAllClippingPlanes()
-
+   
 		self.window.Render()
+		self.iren.ReInitialize()
 
-	def updateStreamlinesAndColors(self, streamlines, colors):
+	# Sync variables from UI to SceneManager
+	def updateStreamlinesAndColors(self, streamlines, color):
 		self.streamlines = streamlines
-		self.color = colors
+		self.color = color
+ 
+	# Sync variables from UI to SceneManager	
+	def updateClusters(self, clusters, color):
+		self.streamlineClusters = clusters
+		self.streamlineClustersColors = color
+
+	# Visualize streamlines by color
+	def visualizeStreamlinesByColor(self, selected_colors, isChecked, streamlinesVisibilityCheckbox, opacity):
 		
-		poly_data, _ = lines_to_vtk_polydata(self.streamlines, self.color)
-		self.streamline_poly_mapper.SetInputData(poly_data)
-		self.streamline_poly_mapper.Update()
-
-		self.window.Render()
-  
-	def showAllTracks(self, streamlinesVisibilityCheckbox):
-
-		poly_data, _ = lines_to_vtk_polydata(self.streamlines, self.color)
-
-		self.streamline_poly_mapper.SetInputData(poly_data)
-		self.streamline_poly_mapper.Update()
-
-		self.visualizeStreamlines(streamlinesVisibilityCheckbox)		
-
-	def visualizeTracksByColor(self, selected_colors, isChecked, streamlinesVisibilityCheckbox):
-		
-		if not isChecked:
-			self.visualizeStreamlines(streamlinesVisibilityCheckbox)
-		
-		else:			
+		if isChecked:			
 			streamline_indices = [None] * selected_colors.shape[0]
 			for i in np.arange(selected_colors.shape[0]):
 				streamline_indices[i] = np.where(np.all(self.color == selected_colors[i], axis=1))
@@ -463,44 +440,37 @@ class SceneManager:
 			indices_to_render = np.concatenate(streamline_indices, axis = 1)
 			selected_streamlines = [self.streamlines[i] for i in list(indices_to_render[0])]
 
-			poly_data, _ = lines_to_vtk_polydata(selected_streamlines,
-															   self.color[tuple(indices_to_render[0]),:])
+			poly_data, _ = lines_to_vtk_polydata(selected_streamlines, self.color[tuple(indices_to_render[0]),:])
 
 			self.streamline_poly_mapper.SetInputData(poly_data)
 			self.streamline_poly_mapper.Update()
-
-			self.visualizeStreamlines(streamlinesVisibilityCheckbox)
-
-	def visualizeClustersByColor(self, selected_colors, isChecked, clustersVisibilityCheckbox):
-     
-		if not isChecked:
-			if self.clustersActor is not None:		 
-				self.ren.RemoveActor(self.clustersActor)
-    
-			self.window.Render()
    
-		else:   
-			if self.clustersActor is not None:
-				cluster_indices = [None] * selected_colors.shape[0]
-				for i in np.arange(selected_colors.shape[0]):
-					cluster_indices[i] = np.where(np.all(self.streamlineClustersColors == selected_colors[i], axis=1))
+			self.opacityStreamlines(opacity)
 
-				indices_to_render = np.concatenate(cluster_indices, axis = 1)
-				selected_Clusters = [self.streamlineClusters[i] for i in list(indices_to_render[0])]     
+		self.visualizeStreamlines(streamlinesVisibilityCheckbox)
 
-				# Poly data with lines and colors
-				poly_data, color_is_scalar = lines_to_vtk_polydata(selected_Clusters, self.streamlineClustersColors[tuple(indices_to_render[0]),:])
+	# Visualize clusters by color
+	def visualizeClustersByColor(self, selected_colors, isChecked, opacity):
+   
+		if isChecked and selected_colors is not None:   
+			cluster_indices = [None] * selected_colors.shape[0]
+			for i in np.arange(selected_colors.shape[0]):
+				cluster_indices[i] = np.where(np.all(self.streamlineClustersColors == selected_colors[i], axis=1))
 
-				self.clusters_poly_mapper.SetInputData(poly_data)
-				self.clusters_poly_mapper.Update()
+			indices_to_render = np.concatenate(cluster_indices, axis = 1)
+			selected_clusters = [self.streamlineClusters.centroids[i] for i in list(indices_to_render[0])]     
+
+			# Poly data with lines and colors
+			poly_data, _ = lines_to_vtk_polydata(selected_clusters, self.streamlineClustersColors[tuple(indices_to_render[0]),:])
+
+			self.clusters_poly_mapper.SetInputData(poly_data)
+			self.clusters_poly_mapper.Update()
+   
+			self.opacityClusters(opacity)
     
-				if clustersVisibilityCheckbox:
-					self.ren.AddActor(self.clustersActor)
-				else:
-					self.ren.RemoveActor(self.clustersActor)
-     
-				self.window.Render()
+		self.window.Render()
 
+	# Export streamlines and colors to pickle file
 	def exportStreamlinesAndColorsLK(self, windowSize, maxLevel, seedsPerPixel, gaussianSigma, sample_name):
 	 
 		pickle_files_save_folder = 'pickle files\\' + sample_name
@@ -515,7 +485,8 @@ class SceneManager:
 		
 		with open(colorsFileName, 'wb') as file:
 			pickle.dump(self.color, file)
-   
+	
+	# Export streamlines and colors to pickle file   
 	def exportStreamlinesAndColorsST(self, neighborhoodScale, noiseScale, seedsPerPixel, downsampleFactor, sample_name):
 	 	
 		pickle_files_save_folder = 'pickle files\\' + sample_name
@@ -531,42 +502,38 @@ class SceneManager:
 		with open(colorsFileName, 'wb') as file:
 			pickle.dump(self.color, file)
    
-	def exportStreamlinesClustersLK(self, windowSize, maxLevel, seedsPerPixel, gaussianSigma, sample_name):
+	# Export clusters to pickle file
+	def exportStreamlinesClustersLK(self, windowSize, maxLevel, seedsPerPixel, gaussianSigma, clusteringThreshold, sample_name):
 		pickle_files_save_folder = 'pickle files\\' + sample_name
 		if not os.path.exists(pickle_files_save_folder):
 			os.makedirs(pickle_files_save_folder)
    
-		streamlinesFileName = pickle_files_save_folder + '\\streamlinesClusters_lk_' + datetime.datetime.now().strftime("%H%M%S_%m%d%Y") + "_win_" + str(windowSize) + "_maxLev_" + str(maxLevel) + "_spp_" + str(seedsPerPixel) + "_blur_" + str(gaussianSigma) + ".pkl"
-		colorsFileName = pickle_files_save_folder + '\\streamlinesClustersColors_lk_' + datetime.datetime.now().strftime("%H%M%S_%m%d%Y") + "_win_" + str(windowSize) + "_maxLev_" + str(maxLevel) + "_spp_" + str(seedsPerPixel) + "_blur_" + str(gaussianSigma) + ".pkl"
+		streamlinesFileName = pickle_files_save_folder + '\\streamlinesClusters_lk_' + datetime.datetime.now().strftime("%H%M%S_%m%d%Y") + "_win_" + str(windowSize) + "_maxLev_" + str(maxLevel) + "_spp_" + str(seedsPerPixel) + "_blur_" + str(gaussianSigma) + "_thresh_" + str(clusteringThreshold) + ".pkl"
+		colorsFileName = pickle_files_save_folder + '\\streamlinesClustersColors_lk_' + datetime.datetime.now().strftime("%H%M%S_%m%d%Y") + "_win_" + str(windowSize) + "_maxLev_" + str(maxLevel) + "_spp_" + str(seedsPerPixel) + "_blur_" + str(gaussianSigma) + "_thresh_" + str(clusteringThreshold) + ".pkl"
 
 		with open(streamlinesFileName, 'wb') as file:
-			pickle.dump(self.streamlineClusters, file)
+			pickle.dump(self.streamlineClusters.centroids, file)
 		
 		with open(colorsFileName, 'wb') as file:
 			pickle.dump(self.streamlineClustersColors, file)
-   
-	def exportStreamlinesClustersST(self, neighborhoodScale, noiseScale, seedsPerPixel, downsampleFactor, sample_name):
+
+	# Export clusters to pickle file   
+	def exportStreamlinesClustersST(self, neighborhoodScale, noiseScale, seedsPerPixel, downsampleFactor, clusteringThreshold, sample_name):
 	 	
 		pickle_files_save_folder = 'pickle files\\' + sample_name
 		if not os.path.exists(pickle_files_save_folder):
 			os.makedirs(pickle_files_save_folder)
    
-		streamlinesFileName = pickle_files_save_folder + '\\streamlinesClusters_st_' + datetime.datetime.now().strftime("%H%M%S_%m%d%Y") + "_neighborscale_" + str(neighborhoodScale) + "_noiseScale_" + str(noiseScale) + "_spp_" + str(seedsPerPixel) + "_ds_factor_" + str(downsampleFactor) + ".pkl"
-		colorsFileName = pickle_files_save_folder + '\\streamlinesClustersColors_st_' + datetime.datetime.now().strftime("%H%M%S_%m%d%Y") + "_neighborscale_" + str(neighborhoodScale) + "_noiseScale_" + str(noiseScale) + "_spp_" + str(seedsPerPixel) + "_ds_factor_" + str(downsampleFactor) + ".pkl"
+		streamlinesFileName = pickle_files_save_folder + '\\streamlinesClusters_st_' + datetime.datetime.now().strftime("%H%M%S_%m%d%Y") + "_neighborscale_" + str(neighborhoodScale) + "_noiseScale_" + str(noiseScale) + "_spp_" + str(seedsPerPixel) + "_ds_factor_" + str(downsampleFactor) + "_thresh_" + str(clusteringThreshold) + ".pkl"
+		colorsFileName = pickle_files_save_folder + '\\streamlinesClustersColors_st_' + datetime.datetime.now().strftime("%H%M%S_%m%d%Y") + "_neighborscale_" + str(neighborhoodScale) + "_noiseScale_" + str(noiseScale) + "_spp_" + str(seedsPerPixel) + "_ds_factor_" + str(downsampleFactor) + "_thresh_" + str(clusteringThreshold) + ".pkl"
 
 		with open(streamlinesFileName, 'wb') as file:
-			pickle.dump(self.streamlineClusters, file)
+			pickle.dump(self.streamlineClusters.centroids, file)
 		
 		with open(colorsFileName, 'wb') as file:
 			pickle.dump(self.streamlineClustersColors, file)
    
-	def updateStreamlines(self, streamlines):
-		self.streamlines = streamlines
-
-	def updateColors(self, color):
-		self.color = color
-		self.addStreamlinesActor(self.streamlines, self.color)
-   
+   # Camera perspective toggle
 	def toggleCameraParallelPerspective(self):
 	   
 		self.parallelView = 1 - self.parallelView
@@ -585,7 +552,8 @@ class SceneManager:
 
 		self.window.Render()
   
-	def addBoundingBox(self, metadata):
+	# Create BB actor
+	def createBBActor(self):
 		
 		x_max = self.extent_x * self.pixel_size_xy
 		y_max = self.extent_y * self.pixel_size_xy
@@ -616,11 +584,27 @@ class SceneManager:
 		self.bbActor.SetMapper(bb_poly_mapper)
 		self.bbActor.GetProperty().SetLineWidth(1)
 		self.bbActor.GetProperty().SetOpacity(0.7)
-  
-		self.ren.AddActor(self.bbActor)
+
+	# Remove the BB actor from the renderer if exists
+	def removeBBActor(self):
+	
+		if self.bbActor is not None:		 
+			self.ren.RemoveActor(self.bbActor)
+   		
+		self.window.Render() 
+   
+	# Visualize BB actor
+	def visualizeBoundingBox(self, enabled):
+	 
+		if self.bbActor is not None:
+			if enabled:
+				self.ren.AddActor(self.bbActor)
+			else:
+				self.ren.RemoveActor(self.bbActor)
 		
-		self.window.Render()
-  
+		self.window.Render() 
+   
+	# Change camera properties and view when interactive editing tab is selected
 	def interactiveEditingTabSelected(self):
        
 		# We want parallel view in this window, the toggle function will toggle it.
@@ -633,6 +617,7 @@ class SceneManager:
   		# Change interactor style to image view
 		self.iren.SetInteractorStyle(vtk.vtkInteractorStyleImage())  
 
+	# When an ROI is drawn, save to disk
 	def ROIDrawComplete(self, caller, event = None, calldata = None):
 		
 		# Get user drawn ROI as path
@@ -658,6 +643,7 @@ class SceneManager:
 		writer.SetInputConnection(imageStencilToImage.GetOutputPort())
 		writer.Write()
  
+	# Set up a contour tracing widget
 	def tracerWidget(self):
   
 		# Change interactor style to image view
@@ -678,10 +664,12 @@ class SceneManager:
 		# Render window
 		#self.window.Render()
 
+	# Remove a contour on exit from interactive editing tab
 	def removeContour(self):
 		self.contourWidget.Off()
 		self.window.Render()
 
+	# Change camera properties and view when visualization tab is selected
 	def visualizationTabSelected(self):
 	 
 		# Change interactor style back to camera trackball
@@ -695,6 +683,7 @@ class SceneManager:
 		self.parallelView = 1
 		self.toggleCameraParallelPerspective()
   
+	# Window level adjustments from UI (left button mouse press and slide up/down and left/right)
 	def windowLevelAdjustments(self, value, keepCurrentWinLev=False):
      
 		if value:
@@ -732,13 +721,5 @@ class SceneManager:
 			# We want perspective view in this window, the toggle function will toggle it.
 			self.parallelView = 1
 			self.toggleCameraParallelPerspective()
-  
-	def visualizeBoundingBox(self, enabled):
-	 
-		if self.bbActor is not None:
-			if enabled:
-				self.ren.AddActor(self.bbActor)
-			else:
-				self.ren.RemoveActor(self.bbActor)
-		
-		self.window.Render()
+   
+			self.SetViewXY()
