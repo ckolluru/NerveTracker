@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1095</width>
-    <height>1068</height>
+    <width>1398</width>
+    <height>1048</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -81,7 +81,7 @@
              <x>0</x>
              <y>0</y>
              <width>431</width>
-             <height>963</height>
+             <height>943</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -862,7 +862,7 @@
              <x>0</x>
              <y>0</y>
              <width>431</width>
-             <height>963</height>
+             <height>943</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_26">
@@ -1136,7 +1136,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1095</width>
+     <width>1398</width>
      <height>21</height>
     </rect>
    </property>
@@ -1679,7 +1679,7 @@
   </connection>
   <connection>
    <sender>XYSliceEdit2</sender>
-   <signal>textChanged(QString)</signal>
+   <signal>returnPressed()</signal>
    <receiver>MainWindow</receiver>
    <slot>xySliceEdit_changed()</slot>
    <hints>
@@ -1887,7 +1887,7 @@
   </connection>
   <connection>
    <sender>XYSliceEdit</sender>
-   <signal>textChanged(QString)</signal>
+   <signal>returnPressed()</signal>
    <receiver>MainWindow</receiver>
    <slot>xySliceEdit_changed()</slot>
    <hints>

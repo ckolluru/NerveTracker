@@ -1254,10 +1254,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.SceneManager.visualizeXYSlice(value, self.checkXYSlice.isChecked())		
 		self.SceneManager.clipStreamlines(self.clipStreamlinesCheckbox.isChecked(), self.clipStreamlinesSlider.value(), value, self.ieTabSelected)
 
-	def xySliceEdit_changed(self, string):
+	def xySliceEdit_changed(self):
      
+		value = self.sender().text()
+  
 		try:
-			self.xySlider.setValue(int(string))
+			self.xySlider.setValue(int(value))
 		except:			
 			msgBox = QMessageBox()
 			msgBox.setText("Incorrect value for XY Slice, expect integer")
@@ -1265,7 +1267,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			return None
 
 		try:
-			self.xySlider2.setValue(int(string))
+			self.xySlider2.setValue(int(value))
 		except:			
 			msgBox = QMessageBox()
 			msgBox.setText("Incorrect value for XY Slice, expect integer")
