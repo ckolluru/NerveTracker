@@ -205,7 +205,7 @@ class ValidationMetadataDialogBox(QDialog):
 		self.ds_factor = QLineEdit(str(self.metadata['ds_factor']), self)
 		self.label2 = QLabel('Section thickness in microns:', self)
 		self.section_thickness = QLineEdit(str(self.metadata['section_thickness']), self)
-		self.label3 = QLabel('Slice numbers to evaluate at:', self)
+		self.label3 = QLabel('Slice numbers to evaluate at (seperated by commas):', self)
 		self.slice_nums_to_evaluate = QLineEdit(str(self.metadata['slice_numbers_to_evaluate']), self)
 		self.label4 = QLabel('Normalize w.r.t slice array index:', self)
 		self.normalize_index = QLineEdit(str(self.metadata['normalize_wrt_slice_physical_distance_microns_array_index']), self)
@@ -213,7 +213,7 @@ class ValidationMetadataDialogBox(QDialog):
 		self.image_height = QLineEdit(str(self.metadata['image_height']), self)  
 		self.label6 = QLabel('Image width:', self)
 		self.image_width = QLineEdit(str(self.metadata['image_width']), self)  
-		self.label7 = QLabel('Pixel size:', self)
+		self.label7 = QLabel('Original pixel size:', self)
 		self.pixel_size = QLineEdit(str(self.metadata['pixel_size']), self)  
   
 	# Define a method to return the user input when the dialog is accepted

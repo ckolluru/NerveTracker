@@ -16,8 +16,13 @@ class PopUpWindow(QDialog):
 		self.initUI(unique_colors)
 
 	def initUI(self, unique_colors):
-		self.setWindowTitle('Enter sub-folder names in the manual segmentation folder corresponding to color')
+		self.setWindowTitle('Validate tractograms')
 
+		label = QLabel()
+		label.setText('Enter sub-folder names in the manual segmentation folder corresponding to color')
+		label_layout = QHBoxLayout()
+		label_layout.addWidget(label)
+  
 		# Create a list to store line edit values
 		self.line_edit_values = []
 		
@@ -32,14 +37,14 @@ class PopUpWindow(QDialog):
 
 			color = unique_colors[i,:] 
 			
-			# Create a push button with the color
-			push_button = QLabel('')
-			push_button.setStyleSheet(f"background-color: rgb(" + str(color[0]) + ", " + str(color[1]) + "," + str(color[2]) + ")")     
+			# Create a label with the color
+			color_label = QLabel('')
+			color_label.setStyleSheet(f"background-color: rgb(" + str(color[0]) + ", " + str(color[1]) + "," + str(color[2]) + ")")     
 			
 			# Create a line edit item
 			line_edit = QLineEdit()
 			self.line_edits.append(line_edit)
-			layout.addRow(push_button, line_edit)
+			layout.addRow(color_label, line_edit)
 
 		self.ok_button = QPushButton('OK', self)
 		self.ok_button.clicked.connect(self.accept)	
@@ -49,6 +54,7 @@ class PopUpWindow(QDialog):
 		buttons_layout.addStretch()
 
 		main_layout = QVBoxLayout(self)
+		main_layout.addLayout(label_layout)
 		main_layout.addLayout(layout)
 		main_layout.addLayout(buttons_layout)
   
