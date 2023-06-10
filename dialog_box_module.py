@@ -148,3 +148,83 @@ class MetadataDialogBox(QDialog):
 				file.write('\t<num_images_to_read name="{}"/>\n'.format(self.metadata['num_images_to_read']))
 				file.write('\t<step_size name="{}"/>\n'.format(self.metadata['step_size']))
 				file.write('</root>')
+
+# Dialog box for inputting validation metadata
+class ValidationMetadataDialogBox(QDialog):
+	def __init__(self, parent=None):
+		super(ValidationMetadataDialogBox, self).__init__(parent)
+  
+		self.metadata = self.get_defaults()  
+		self.createDialogBoxValues()
+		
+		# Create the OK button and connect it to the accept method
+		self.ok_button = QPushButton('OK', self)
+		self.ok_button.clicked.connect(self.accept)	
+  
+		# Create the layout and add the widgets to it
+		layout = QFormLayout()
+		layout.addRow(self.label1, self.ds_factor)
+		layout.addRow(self.label2, self.section_thickness)
+		layout.addRow(self.label3, self.slice_nums_to_evaluate)
+		layout.addRow(self.label4, self.normalize_index)
+		layout.addRow(self.label5, self.image_height)
+		layout.addRow(self.label6, self.image_width)
+		layout.addRow(self.label7, self.pixel_size)
+
+		buttons_layout = QHBoxLayout()
+		buttons_layout.addStretch()
+		buttons_layout.addWidget(self.ok_button)
+		buttons_layout.addStretch()
+
+		main_layout = QVBoxLayout(self)
+		main_layout.addLayout(layout)
+		main_layout.addLayout(buttons_layout)
+  
+		self.setLayout(main_layout)
+		self.setWindowTitle ('Validation method metadata information')
+		self.setWhatsThis("Provide metadata information for the validation stack.")
+
+    # Set default values for fields in the dialog box
+	def get_defaults(self):
+    
+		metadata = dict()
+		metadata['ds_factor'] = 1
+		metadata['section_thickness'] = 3.0
+		metadata['slice_numbers_to_evaluate'] = "0, 499, 999, 1499"
+		metadata['normalize_wrt_slice_physical_distance_microns_array_index'] = 0
+		metadata['image_height'] = 3000
+		metadata['image_width'] = 4000
+		metadata['pixel_size'] = 0.9
+  
+		return metadata
+		
+	# Create the labels and input fields
+	def createDialogBoxValues(self):
+
+		self.label1 = QLabel('Downsampling factor:', self)
+		self.ds_factor = QLineEdit(str(self.metadata['ds_factor']), self)
+		self.label2 = QLabel('Section thickness in microns:', self)
+		self.section_thickness = QLineEdit(str(self.metadata['section_thickness']), self)
+		self.label3 = QLabel('Slice numbers to evaluate at:', self)
+		self.slice_nums_to_evaluate = QLineEdit(str(self.metadata['slice_numbers_to_evaluate']), self)
+		self.label4 = QLabel('Normalize w.r.t slice array index:', self)
+		self.normalize_index = QLineEdit(str(self.metadata['normalize_wrt_slice_physical_distance_microns_array_index']), self)
+		self.label5 = QLabel('Image height:', self)
+		self.image_height = QLineEdit(str(self.metadata['image_height']), self)  
+		self.label6 = QLabel('Image width:', self)
+		self.image_width = QLineEdit(str(self.metadata['image_width']), self)  
+		self.label7 = QLabel('Pixel size:', self)
+		self.pixel_size = QLineEdit(str(self.metadata['pixel_size']), self)  
+  
+	# Define a method to return the user input when the dialog is accepted
+	def get_metadata(self):
+		self.metadata['ds_factor'] = float(self.ds_factor.text())
+		self.metadata['section_thickness'] = float(self.section_thickness.text())
+		slice_nums_string = self.slice_nums_to_evaluate.text()
+		self.metadata['slice_numbers_to_evaluate'] =  [int(i) for i in slice_nums_string.split(',')]  		
+		self.metadata['normalize_wrt_slice_physical_distance_microns_array_index'] = int(self.normalize_index.text())
+		self.metadata['image_height'] = int(self.image_height.text())
+		self.metadata['image_width'] = int(self.image_width.text())
+		self.metadata['pixel_size'] = float(self.pixel_size.text())
+  		
+		return self.metadata

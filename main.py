@@ -19,7 +19,8 @@ from tqdm import tqdm
 
 from optical_flow_module import OpticFlowClass
 from structure_tensor_module import StructureTensorClass
-from dialog_box_module import MetadataDialogBox
+from dialog_box_module import MetadataDialogBox, ValidationMetadataDialogBox
+from validate_tractograms_module import validate
 from act_module import ACTClass
 
 import pickle
@@ -1285,7 +1286,49 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 	def parallelPerspectiveViewButton(self):
 		self.SceneManager.toggleCameraParallelPerspective()       
+
+	def validateTractograms(self):
+		title = "Select the streamlines file that should be validated"
+		streamlinesFilePath = QFileDialog.getOpenFileName(self,
+										title,
+										os.path.expanduser("."),
+										"Streamline File (*.pkl)")
+
+		if streamlinesFilePath[0] == '':
+			streamlinesFilePath = None
+			return
+
+		colorsFile = os.path.dirname(streamlinesFilePath[0]) + '\\colors_' + os.path.basename(streamlinesFilePath[0])[12:]
   
+		if not os.path.exists(colorsFile):
+			msgBox = QMessageBox()
+			msgBox.setText("Did not find the colors pickle file in the same folder, exiting.")
+			msgBox.exec()
+			return 			
+  
+		title = "Select the folder containing the ground truth segmentation masks (each sub-folder should containing masks tracking one ROI)"
+		flags = QFileDialog.ShowDirsOnly
+		self.validation_masks = QFileDialog.getExistingDirectory(self,
+															title,
+															os.path.expanduser("."),
+															flags)
+
+		if self.validation_masks == '':
+			self.validation_masks = None
+			return
+
+		
+		dialog = ValidationMetadataDialogBox()
+		if dialog.exec_() == QDialog.Accepted:
+			validationMetadata = dialog.get_metadata()
+
+		dice_color_averaged, normalized_dice = validate(streamlinesFilePath[0], colorsFile, self.validation_masks, validationMetadata)
+    
+		msgBox = QMessageBox()
+		msgBox.setText("Normalized Dice score at intermediate slices: " + np.array2string(normalized_dice) + "\nMean: " + str(np.round(np.mean(normalized_dice), 2)))
+		msgBox.exec()
+		return 	
+
 if __name__ == '__main__':
 
 	app = QApplication(sys.argv)
