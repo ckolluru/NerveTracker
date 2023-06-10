@@ -187,6 +187,7 @@ class ValidationMetadataDialogBox(QDialog):
     # Set default values for fields in the dialog box
 	def get_defaults(self):
     
+		# sample 1
 		metadata = dict()
 		metadata['ds_factor'] = 1
 		metadata['section_thickness'] = 3.0
@@ -195,6 +196,15 @@ class ValidationMetadataDialogBox(QDialog):
 		metadata['image_height'] = 3000
 		metadata['image_width'] = 4000
 		metadata['pixel_size'] = 0.9
+  
+		# sample 2
+		# metadata['ds_factor'] = 1
+		# metadata['section_thickness'] = 3.0
+		# metadata['slice_numbers_to_evaluate'] = "0, 300, 600, 902"
+		# metadata['normalize_wrt_slice_physical_distance_microns_array_index'] = 0
+		# metadata['image_height'] = 2380
+		# metadata['image_width'] = 2196
+		# metadata['pixel_size'] = 0.74
   
 		return metadata
 		
