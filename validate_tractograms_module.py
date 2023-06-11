@@ -67,9 +67,7 @@ class PopUpWindow(QDialog):
 		
 def validate(streamlinesFilePath, colorsFile, validation_masks, validationMetadata):
 	
-	streamlinesFolder = r'D:\MUSE processing\PyFibers\pickle files\comparison-151-iodine\\ST 3x DS\\'
-	streamlinesFile = glob.glob(streamlinesFolder + 'streamlines*.pkl')[0]
-	colorsFile = os.path.dirname(streamlinesFile) + '\\colors_' + os.path.basename(streamlinesFile)[12:]
+	streamlinesFile = streamlinesFilePath
   
 	ds_factor = validationMetadata['ds_factor']
 	normalize_wrt_slice_physical_distance_microns_array_index = validationMetadata['normalize_wrt_slice_physical_distance_microns_array_index']

@@ -72,16 +72,18 @@ def find_seed_points(mask_image, seeds_per_pixel):
 		
 		# For each randomly sampled point
 		for j in np.arange(len(xy_indices)):
-			
+      
+			# Once you reach the necessary number of seeds, break from this loop
+			if seed_counter == num_seeds_in_current_fascicle:
+				break			
+
 			# Check if the current random point is inside the fascicle region
 			if current_fascicle_mask[int(np.floor(xy_indices[j, 1])), int(np.floor(xy_indices[j,0]))]:
 				seed_point_coordinates[seeds_already_assigned + seed_counter, :] = [xy_indices[j,0], xy_indices[j,1]]
 				fascicle_tracker_seed_points[seeds_already_assigned + seed_counter] = fascicles_unique_values[i]
 				seed_counter = seed_counter + 1
 			
-			# Once you reach the necessary number of seeds, break from this loop
-			if seed_counter == num_seeds_in_current_fascicle:
-				break
+
 
 		# Assign color for this group of seeds
 		color[seeds_already_assigned:seeds_already_assigned + seed_counter,:] = distinct_colors[i]

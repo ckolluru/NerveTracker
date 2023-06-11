@@ -133,7 +133,7 @@ class StructureTensorClass(QtCore.QThread):
 		overlap = int((2* larger_sigma + 0.5))
 		ds_factor = self.downsampleFactor if self.downsampleFactor != 0 else 1
 		
-		# Getting this value since multiplying is faster than division
+		# Upsampling factor
 		us_factor = 1 / ds_factor
   
 		# Angle threshold (75 degrees) in pixels, all ST computation is down after downsampling in XY to get near isotropic voxels
