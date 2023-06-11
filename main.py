@@ -1325,6 +1325,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		dice_color_averaged, normalized_dice = validate(streamlinesFilePath[0], colorsFile, self.validation_masks, validationMetadata)
     
 		msgBox = QMessageBox()
+		msgBox.setWindowTitle('Validate tractograms result')
 		msgBox.setText("Normalized Dice score at intermediate slices: " + np.array2string(normalized_dice) + "\nMean: " + str(np.round(np.mean(normalized_dice), 2)))
 		msgBox.exec()
 		return 	
