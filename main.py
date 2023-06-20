@@ -15,6 +15,7 @@ from scenemanager import SceneManager
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
+import zarr
 from tqdm import tqdm
 
 from optical_flow_module import OpticFlowClass
@@ -143,10 +144,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			return None
 
 		# Read the first image in the directory and infer the image shape
-		filelist = glob.glob(self.imagesPath + '\\*' + self.metadata['image_type'])
-		pil_image = Image.open(filelist[0])
-		image = np.asarray(pil_image)
-  
+		if self.metadata['image_type'] == '.png':
+			filelist = glob.glob(self.imagesPath + '\\*' + self.metadata['image_type'])
+			pil_image = Image.open(filelist[0])
+			image = np.asarray(pil_image)
+		
+		else:
+			dataset = zarr.open(self.imagesPath)
+			muse_dataset = dataset['muse']
+			image = np.squeeze(np.array(muse_dataset[0, :, :, :]))   
+
 		self.metadata['x_size_pixels'] = image.shape[1]
 		self.metadata['y_size_pixels'] = image.shape[0]
   

@@ -5,6 +5,7 @@ from tqdm import tqdm
 import math
 from skimage.measure import block_reduce
 import matplotlib.pyplot as plt
+import zarr
 from tractogram_functions import find_seed_points, tractogram
 from PyQt5 import QtCore
 
@@ -125,7 +126,11 @@ class StructureTensorClass(QtCore.QThread):
 		tracking_status = np.ones((len(streamlines)))  
   
 		# Get filenames
-		image_filelist = glob.glob(self.folderImagesPath + "\\*" + self.metadata['image_type'])
+		if self.metadata['image_type'] == '.png':
+			image_filelist = glob.glob(self.folderImagesPath + "\\*.png")
+		else:
+			dataset = zarr.open(self.folderImagesPath)
+			muse_dataset = dataset['muse']
 		
 		# Get a chunk of the data
 		step_size = self.metadata['step_size']
@@ -183,7 +188,12 @@ class StructureTensorClass(QtCore.QThread):
    			
 			try:
 				for j in np.arange(abs(start_chunk - stop_chunk)):
-					image_stack[:,:,j] = (plt.imread(image_filelist[start_chunk + (j*direction)])* 255).astype('uint8')
+					if self.metadata['image_type'] == '.png':
+						image_stack[:,:,j] = (plt.imread(image_filelist[start_chunk + (j*direction)])* 255).astype('uint8')
+					else:
+						image = np.squeeze(np.array(muse_dataset[start_chunk + (j*direction), 0, :, :]))
+						image_stack[:,:,j] = image.astype('uint8')
+      
 			except ValueError:
 				print('Could not read image files, possible error in metadata file for image size fields or images not present in specified path')
 				return None, None

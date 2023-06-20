@@ -9,6 +9,7 @@ from tqdm import tqdm
 
 from tractogram_functions import find_seed_points, tractogram
 from PyQt5 import QtCore
+import zarr
 
 class OpticFlowClass(QtCore.QThread):
     
@@ -112,7 +113,11 @@ class OpticFlowClass(QtCore.QThread):
 		tracking_status = np.ones((len(streamlines)))
    
 		# Get filenames
-		image_filelist = glob.glob(self.folderImagesPath + "\\*" + self.metadata['image_type'])
+		if self.metadata['image_type'] == '.png':
+			image_filelist = glob.glob(self.folderImagesPath + "\\*.png")
+		else:
+			dataset = zarr.open(self.folderImagesPath)
+			muse_dataset = dataset['muse']
   
 		# Angle threshold (75 degrees) in pixels
 		angle_threshold_pixels = int(np.tan(np.deg2rad(75)) * self.metadata['section_thickness'] / self.metadata['pixel_size_xy'])
@@ -123,7 +128,11 @@ class OpticFlowClass(QtCore.QThread):
 			# Blur the images a bit to have a better gradient, else will be noisy
 			if i == self.startSliceIndex:
 				try:
-					image = (plt.imread(image_filelist[self.startSliceIndex])* 255).astype('uint8')
+					if self.metadata['image_type'] == '.png':
+						image = (plt.imread(image_filelist[self.startSliceIndex])* 255).astype('uint8')
+					else:
+						image = np.squeeze(np.array(muse_dataset[self.startSliceIndex, 0, :, :]))
+						image = image.astype('uint8')
 				except ValueError:
 					print('Could not read image files, possible error in metadata file for image size fields or images not present in specified path')
 					return None
@@ -132,7 +141,11 @@ class OpticFlowClass(QtCore.QThread):
 				current_image = next_image
 			
 			try:
-				image = (plt.imread(image_filelist[i+direction])* 255).astype('uint8')
+				if self.metadata['image_type'] == '.png':
+					image = (plt.imread(image_filelist[i+direction])* 255).astype('uint8')
+				else:
+					image = np.squeeze(np.array(muse_dataset[i+direction, 0, :, :]))
+					image = image.astype('uint8')					
 			except ValueError:
 				print('Could not read image files, possible error in metadata file for image size fields or images not present in specified path')
 				return None

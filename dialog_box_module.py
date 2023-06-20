@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QPushButton, QFileDialog
-from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFormLayout
+from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QFormLayout, QRadioButton
 
 # We'll need to access home directory, file path read, xml read
 import untangle
@@ -12,6 +12,13 @@ class MetadataDialogBox(QDialog):
   
 		self.metadata = self.get_defaults()  
 		self.createDialogBoxValues()
+  
+		# Create radio buttons for image type
+		self.image_type_label = QLabel("Image type", self)
+		self.png_radio_button = QRadioButton("PNG", self)
+		self.png_radio_button.setChecked(True)
+		self.zarr_radio_button = QRadioButton("Zarr", self)
+		self.zarr_radio_button.setChecked(False)  
 		
 		# Create the OK button and connect it to the accept method
 		self.ok_button = QPushButton('OK', self)
@@ -29,9 +36,15 @@ class MetadataDialogBox(QDialog):
 		layout = QFormLayout()
 		layout.addRow(self.label1, self.pixel_size_xy)
 		layout.addRow(self.label2, self.section_thickness)
-		layout.addRow(self.label3, self.image_type)
-		layout.addRow(self.label4, self.num_images_to_read)
-		layout.addRow(self.label5, self.chunk_size_z)
+		layout.addRow(self.label3, self.num_images_to_read)
+		layout.addRow(self.label4, self.chunk_size_z)
+  
+		image_type_layout = QHBoxLayout()
+		image_type_layout.addWidget(self.image_type_label)
+		image_type_layout.addStretch()
+		image_type_layout.addWidget(self.png_radio_button)
+		image_type_layout.addStretch()
+		image_type_layout.addWidget(self.zarr_radio_button)
 
 		buttons_layout = QHBoxLayout()
 		buttons_layout.addWidget(self.load_button)
@@ -41,6 +54,7 @@ class MetadataDialogBox(QDialog):
 
 		main_layout = QVBoxLayout(self)
 		main_layout.addLayout(layout)
+		main_layout.addLayout(image_type_layout)
 		main_layout.addLayout(buttons_layout)
   
 		self.setLayout(main_layout)
@@ -66,11 +80,9 @@ class MetadataDialogBox(QDialog):
 		self.pixel_size_xy = QLineEdit(str(self.metadata['pixel_size_xy']), self)
 		self.label2 = QLabel('Section thickness in microns:', self)
 		self.section_thickness = QLineEdit(str(self.metadata['section_thickness']), self)
-		self.label3 = QLabel('Image Type:', self)
-		self.image_type = QLineEdit(str(self.metadata['image_type']), self)
-		self.label4 = QLabel('Number of images to read:', self)
+		self.label3 = QLabel('Number of images to read:', self)
 		self.num_images_to_read = QLineEdit(str(self.metadata['num_images_to_read']), self)
-		self.label5 = QLabel('Chunk size in Z (used for ST analysis):', self)
+		self.label4 = QLabel('Chunk size in Z (used for ST analysis):', self)
 		self.chunk_size_z = QLineEdit(str(self.metadata['step_size']), self)  
 
 	# Update dialog box from XML file
@@ -78,17 +90,25 @@ class MetadataDialogBox(QDialog):
     
 		self.pixel_size_xy.setText(str(self.metadata['pixel_size_xy']))
 		self.section_thickness.setText(str(self.metadata['section_thickness']))
-		self.image_type.setText(str(self.metadata['image_type']))
 		self.num_images_to_read.setText(str(self.metadata['num_images_to_read']))
 		self.chunk_size_z.setText(str(self.metadata['step_size']))
+  
+		if str(self.metadata['image_type']) == '.png':
+			self.png_radio_button.setChecked(True)
+		if str(self.metadata['image_type']) == '.zarr':
+			self.zarr_radio_button.setChecked(True)
   
 	# Define a method to return the user input when the dialog is accepted
 	def get_metadata(self):
 		self.metadata['pixel_size_xy'] = float(self.pixel_size_xy.text())
 		self.metadata['section_thickness'] = float(self.section_thickness.text())
-		self.metadata['image_type'] = self.image_type.text()
 		self.metadata['num_images_to_read'] = int(self.num_images_to_read.text())
 		self.metadata['step_size'] = int(self.chunk_size_z.text())
+  
+		if self.png_radio_button.isChecked():
+			self.metadata['image_type'] = '.png'
+		else:
+			self.metadata['image_type'] = '.zarr'
   		
 		return self.metadata
   
