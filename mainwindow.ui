@@ -88,7 +88,7 @@
             <item>
              <widget class="QGroupBox" name="groupBox">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -1171,6 +1171,7 @@
     <addaction name="actionVisualize_Axis"/>
     <addaction name="menuFixed_Point_of_View"/>
     <addaction name="actionTake_snapshot"/>
+    <addaction name="actionStack_flythrough_for_movie"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1447,6 +1448,11 @@
   <action name="actionValidate_Tractograms">
    <property name="text">
     <string>Validate Tractograms</string>
+   </property>
+  </action>
+  <action name="actionStack_flythrough_for_movie">
+   <property name="text">
+    <string>Stack flythrough for movie</string>
    </property>
   </action>
  </widget>
@@ -2243,6 +2249,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionStack_flythrough_for_movie</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>stack_flythrough()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>698</x>
+     <y>523</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>OpenFolderImages()</slot>
@@ -2294,5 +2316,6 @@
   <slot>setWindowLevel()</slot>
   <slot>visualizeStreamlinesByColor()</slot>
   <slot>validateTractograms()</slot>
+  <slot>stack_flythrough()</slot>
  </slots>
 </ui>

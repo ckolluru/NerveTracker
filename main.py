@@ -23,6 +23,7 @@ from structure_tensor_module import StructureTensorClass
 from dialog_box_module import MetadataDialogBox, ValidationMetadataDialogBox
 from validate_tractograms_module import validate
 from act_module import ACTClass
+from flythrough_module import MovieClass
 
 import pickle
 from dipy.segment.clustering import QuickBundles
@@ -88,8 +89,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		# Validate inputs
 		winSizeValidator = QIntValidator(3, 1000, self.windowSizeEdit)
 		self.windowSizeEdit.setValidator(winSizeValidator)
-    
-    # We need to call QVTKWidget's show function before initializing the interactor
+	
+	# We need to call QVTKWidget's show function before initializing the interactor
 	def initVTK(self):
 
 		self.show()		
@@ -343,7 +344,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 	# Uncheck streamline specific UI elements to start afresh
 	def uncheckStreamlinesUIElements(self):
-     
+	 
 		self.clipStreamlinesCheckbox.setChecked(False)
 		self.selectTracksByColorCheckbox.setChecked(False)
 		self.clusterCheckbox.setChecked(False)
@@ -406,13 +407,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
    
 		self.SceneManager.visualizeClusters(isChecked)
 		self.statusBar().showMessage('Creating and visualizing cluster bundles complete.', 2000)
-    
-    # Progress bar update from threads
+	
+	# Progress bar update from threads
 	def progressUpdate(self, value):
 		self.progressBar.setValue(value)  
 		self.progressBar2.setValue(value)  
  
-    # Progress bar minimum value update from threads 
+	# Progress bar minimum value update from threads 
 	def progressMinimum(self, value):
 		self.progressBar.setMinimum(value)
 		self.progressBar2.setMinimum(value)
@@ -471,7 +472,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			# Enable the interactive editing tab 
 			if self.color is not None and self.streamlines is not None:
 				self.tabWidget.setTabEnabled(1, True)
-    
+	
 			# Uncheck UI elements to start afresh
 			self.uncheckStreamlinesUIElements()
    
@@ -643,7 +644,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 			for i in np.arange(len(selected_indices)):
 				selected_colors[i,:] = unique_colors[int(selected_indices[i].row()), :]    
-    
+	
 			self.SceneManager.visualizeStreamlinesByColor(selected_colors, isChecked, self.streamlinesVisibilityCheckbox.isChecked(), self.streamlinesOpacitySlider.value())
 			self.SceneManager.visualizeClustersByColor(selected_colors, self.clusterCheckbox.isChecked(), self.streamlinesOpacitySlider.value())
 			
@@ -1040,7 +1041,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 	# Anatomically constrain tractography (ACT) thread finished slot
 	def actComplete(self, value):
-     
+	 
 		if value == 1:
 			streamlines_image_coords = self.actThread.get_streamlines_image_coords()
 	
@@ -1208,7 +1209,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	
 	# Window level adjustment from UI (only for visualization, not used in analysis)
 	def setWindowLevel(self, value):
-     
+	 
 		if value:
 			self.SceneManager.windowLevelAdjustments(value)
 		else:
@@ -1222,7 +1223,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 				self.SceneManager.windowLevelAdjustments(value, True)
 			else:
 				self.SceneManager.windowLevelAdjustments(value, False)
-    
+	
 	def FileExit(self):
 		app.quit()
 
@@ -1246,7 +1247,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.SceneManager.Snapshot()
 
 	def ToggleVisualizeAxis(self, visible):
-     
+	 
 		self.actionVisualize_Axis.setChecked(visible)
 		self.checkVisualizeAxis.setChecked(visible)
 		self.SceneManager.ToggleVisualizeAxis(visible)
@@ -1262,9 +1263,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.SceneManager.visualizeXYSlice(value, self.checkXYSlice.isChecked())		
 		self.SceneManager.clipStreamlines(self.clipStreamlinesCheckbox.isChecked(), self.clipStreamlinesSlider.value(), value, self.ieTabSelected)
 
-	def xySliceEdit_changed(self):
-     
-		value = self.sender().text()
+	def xySliceEdit_changed(self, value = None):
+	 
+		if value is None:
+			value = self.sender().text()
   
 		try:
 			self.xySlider.setValue(int(value))
@@ -1330,13 +1332,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			validationMetadata = dialog.get_metadata()
 
 		dice_color_averaged, normalized_dice = validate(streamlinesFilePath[0], colorsFile, self.validation_masks, validationMetadata)
-    
+	
 		msgBox = QMessageBox()
 		msgBox.setWindowTitle('Validate tractograms result')
 		msgBox.setText("Normalized Dice score at intermediate slices: " + np.array2string(normalized_dice) + "\nMean: " + str(np.round(np.mean(normalized_dice), 2)))
 		msgBox.exec()
 		return 	
 
+	def changeSlice(self, value):
+		self.xySliceEdit_changed(value)
+	
+	def flythroughComplete(self, value):
+		self.movieThread.terminate_thread()
+		
+	def stack_flythrough(self):
+		
+		self.movieThread = MovieClass(self.metadata['num_images_to_read'])
+		self.movieThread.sliceSignal.connect(self.changeSlice)
+		self.movieThread.completeSignal.connect(self.flythroughComplete)
+		self.movieThread.start()
+  
 if __name__ == '__main__':
 
 	app = QApplication(sys.argv)
