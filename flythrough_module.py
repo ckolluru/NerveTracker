@@ -11,9 +11,9 @@ class MovieClass(QtCore.QThread):
 		self.sliceCount = sliceCount
 
 	def run(self):
-		for i in range(self.sliceCount):
+		for i in range(0, self.sliceCount, 5):
 			self.sliceSignal.emit(i)
-			time.sleep(1/25)
+			time.sleep(1/5)
    
 		self.completeSignal.emit(1)
   
