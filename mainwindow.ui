@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>NerveTracker v1.0</string>
+   <string>NerveTracker v0.1</string>
   </property>
   <property name="documentMode">
    <bool>false</bool>

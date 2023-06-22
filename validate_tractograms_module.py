@@ -87,7 +87,9 @@ def validate(streamlinesFilePath, colorsFile, validation_masks, validationMetada
 		color_names = popup.get_color_names()   
 
 	iou = np.zeros((len(color_names), len(slice_physical_distance_microns)))
-	dice = np.zeros((len(color_names),len(slice_physical_distance_microns)))   
+	dice = np.zeros((len(color_names),len(slice_physical_distance_microns)))  
+ 
+	false_positives = np.zeros((len(color_names), len(slice_physical_distance_microns)))
 			
 	for k in range(len(color_names)):
 		
@@ -153,10 +155,12 @@ def validate(streamlinesFilePath, colorsFile, validation_masks, validationMetada
 			
 			intersection = np.sum(mask1 * mask2)
 			dice[k, index_z_val] = (2. * intersection) / (np.sum(mask1) + np.sum(mask2))
+   
+			false_positives[k, index_z_val] = np.sum((mask2 == 1) & (mask1 == 0))
 				
 		dice_color_averaged = np.mean(dice, axis=0)		
  
 	normalized_dice = dice_color_averaged/dice_color_averaged[normalize_wrt_slice_physical_distance_microns_array_index]
 	normalized_dice = np.delete(normalized_dice, normalize_wrt_slice_physical_distance_microns_array_index)
  
-	return dice_color_averaged, normalized_dice
+	return dice_color_averaged, normalized_dice, np.sum(false_positives)

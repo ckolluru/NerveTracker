@@ -135,7 +135,7 @@ class StructureTensorClass(QtCore.QThread):
 		# Get a chunk of the data
 		step_size = self.metadata['step_size']
 		larger_sigma = self.noiseScale if self.noiseScale > self.neighborhoodScale else self.neighborhoodScale
-		overlap = int((2* larger_sigma + 0.5))
+		overlap = int((2* larger_sigma + 1))
 		ds_factor = self.downsampleFactor if self.downsampleFactor != 0 else 1
 		
 		# Upsampling factor

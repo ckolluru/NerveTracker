@@ -1331,12 +1331,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		if dialog.exec_() == QDialog.Accepted:
 			validationMetadata = dialog.get_metadata()
 
-		dice_color_averaged, normalized_dice = validate(streamlinesFilePath[0], colorsFile, self.validation_masks, validationMetadata)
+		dice_color_averaged, normalized_dice, false_positives = validate(streamlinesFilePath[0], colorsFile, self.validation_masks, validationMetadata)
 	
 		msgBox = QMessageBox()
 		msgBox.setWindowTitle('Validate tractograms result')
 		msgBox.setText("Normalized Dice score at intermediate slices: " + np.array2string(normalized_dice) + "\nMean: " + str(np.round(np.mean(normalized_dice), 2)))
 		msgBox.exec()
+  
+		msgBox = QMessageBox()
+		msgBox.setWindowTitle('Validate tractograms result')
+		msgBox.setText("False positives: " + np.array2string(false_positives))
+		msgBox.exec()
+  
 		return 	
 
 	def changeSlice(self, value):
