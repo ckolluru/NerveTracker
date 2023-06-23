@@ -1331,7 +1331,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		if dialog.exec_() == QDialog.Accepted:
 			validationMetadata = dialog.get_metadata()
 
-		dice_color_averaged, normalized_dice, false_positives = validate(streamlinesFilePath[0], colorsFile, self.validation_masks, validationMetadata)
+		dice_color_averaged, normalized_dice, false_positives, true_positives, false_negatives, true_negatives = validate(streamlinesFilePath[0], colorsFile, self.validation_masks, validationMetadata)
 	
 		msgBox = QMessageBox()
 		msgBox.setWindowTitle('Validate tractograms result')
@@ -1340,7 +1340,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
   
 		msgBox = QMessageBox()
 		msgBox.setWindowTitle('Validate tractograms result')
-		msgBox.setText("False positives: " + np.array2string(false_positives))
+		msgBox.setText("False positives: " + np.array2string(false_positives) + "\n" +
+                 		"True positives: " + np.array2string(true_positives) + "\n" +
+                   "False negatives: " + np.array2string(false_negatives) + "\n" +
+                   "True negatives: " + np.array2string(true_negatives) + "\n")
 		msgBox.exec()
   
 		return 	
