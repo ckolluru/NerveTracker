@@ -1340,10 +1340,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
   
 		msgBox = QMessageBox()
 		msgBox.setWindowTitle('Validate tractograms result')
-		msgBox.setText("False positives: " + np.array2string(false_positives) + "\n" +
-                 		"True positives: " + np.array2string(true_positives) + "\n" +
-                   "False negatives: " + np.array2string(false_negatives) + "\n" +
-                   "True negatives: " + np.array2string(true_negatives) + "\n")
+		msgBox.setText("False positives: " + np.array2string(np.sum(false_positives)) + "\n" +
+                 		"True positives: " + np.array2string(np.sum(true_positives)) + "\n" +
+                   "False negatives: " + np.array2string(np.sum(false_negatives)) + "\n" +
+                   "True negatives: " + np.array2string(np.sum(true_negatives)) + "\n")
 		msgBox.exec()
   
 		return 	
