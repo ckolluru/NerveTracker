@@ -162,7 +162,7 @@ def validate(streamlinesFilePath, colorsFile, validation_masks, validationMetada
 			false_positives[k, index_z_val] = np.sum((mask2 == 1) & (mask1 == 0))
 			true_positives[k, index_z_val] = np.sum((mask2 == 1) & (mask1 == 1))
 			false_negatives[k, index_z_val] = np.sum((mask2 == 0) & (mask1 == 1))
-			true_negatives[k, index_z_val] = np.sum((mask2 == 0) & (mask1 == 1))
+			true_negatives[k, index_z_val] = np.sum((mask2 == 0) & (mask1 == 0))
 				
 		dice_color_averaged = np.mean(dice, axis=0)		
  
