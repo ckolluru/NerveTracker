@@ -18,19 +18,19 @@ import matplotlib.pyplot as plt
 import zarr
 from tqdm import tqdm
 
-from optical_flow_module import OpticFlowClass
-from structure_tensor_module import StructureTensorClass
-from dialog_box_module import MetadataDialogBox, ValidationMetadataDialogBox
-from validate_tractograms_module import validate
-from act_module import ACTClass
-from flythrough_module import MovieClass
+from modules.optical_flow_module import OpticFlowClass
+from modules.structure_tensor_module import StructureTensorClass
+from visualization.dialog_box_module import MetadataDialogBox, ValidationMetadataDialogBox
+from tools.validate_tractograms import validate
+from modules.act_module import ACTClass
+from visualization.flythrough_module import MovieClass
 
 import pickle
 from dipy.segment.clustering import QuickBundles
 
 import distinctipy
 from PIL import Image
-from compare_tractograms import compare_tractogram_clusters
+from tools.compare_tractograms import compare_tractogram_clusters
 
 # Load GUI
 Ui_MainWindow = loadUiType("mainwindow.ui")[0]

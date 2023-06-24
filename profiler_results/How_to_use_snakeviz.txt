@@ -1,2 +1,0 @@
-python -m cProfile -o profiler_results\main_st.prof main.py
-snakeviz 'profiler_results\main_st.prof'
