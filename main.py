@@ -153,7 +153,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		else:
 			dataset = zarr.open(self.imagesPath)
 			muse_dataset = dataset['muse']
-			image = np.squeeze(np.array(muse_dataset[0, :, :, :]))   
+			image = np.squeeze(np.array(muse_dataset[0, 0, :, :]))   
 
 		self.metadata['x_size_pixels'] = image.shape[1]
 		self.metadata['y_size_pixels'] = image.shape[0]
@@ -1102,6 +1102,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			current_streamline = np.dot(current_streamline, lin_T) + offset
    
 			self.streamlines[k] = current_streamline 
+
+		self.statusBar().showMessage('')
    
 	# For tractogram comparison only, no visualization/rendering update
 	def getClusterStreamlinesAndColors(self, streamlines, colors):

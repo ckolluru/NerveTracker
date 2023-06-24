@@ -1,7 +1,7 @@
 import vtk
 import datetime
 import numpy as np
-from vtk_helper_functions import lines_to_vtk_polydata
+from visualization.vtk_helper_functions import lines_to_vtk_polydata
 import pickle
 import os
 import math

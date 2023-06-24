@@ -6,7 +6,7 @@ import math
 from skimage.measure import block_reduce
 import matplotlib.pyplot as plt
 import zarr
-from tractogram_functions import find_seed_points, tractogram
+from tools.tractogram_functions import find_seed_points, tractogram
 from PyQt5 import QtCore
 
 # CPU option

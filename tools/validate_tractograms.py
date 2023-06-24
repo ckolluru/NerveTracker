@@ -134,7 +134,10 @@ def validate(streamlinesFilePath, colorsFile, validation_masks, validationMetada
 			points_in_streamlines = points_in_streamlines/pixel_size    
 			points_in_streamlines[:,1] = image_height - points_in_streamlines[:,1]
 			
-			mask_image = Image.open(validation_masks_list[index_z_val])
+			try:
+				mask_image = Image.open(validation_masks_list[index_z_val])
+			except IndexError:
+				return
 			mask_image = np.array(mask_image)
 			
 			streamline_mask_image = np.zeros((image_height, image_width))

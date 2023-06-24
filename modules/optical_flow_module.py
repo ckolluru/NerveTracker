@@ -7,7 +7,7 @@ import glob
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from tractogram_functions import find_seed_points, tractogram
+from tools.tractogram_functions import find_seed_points, tractogram
 from PyQt5 import QtCore
 import zarr
 
@@ -131,7 +131,7 @@ class OpticFlowClass(QtCore.QThread):
 					if self.metadata['image_type'] == '.png':
 						image = (plt.imread(image_filelist[self.startSliceIndex])* 255).astype('uint8')
 					else:
-						image = np.squeeze(np.array(muse_dataset[self.startSliceIndex, 0, :, :]))
+						image = np.squeeze(np.array(muse_dataset[0, self.startSliceIndex, :, :]))
 						image = image.astype('uint8')
 				except ValueError:
 					print('Could not read image files, possible error in metadata file for image size fields or images not present in specified path')
