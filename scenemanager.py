@@ -5,6 +5,10 @@ from visualization.vtk_helper_functions import lines_to_vtk_polydata
 import pickle
 import os
 import math
+import zarr
+from vtkmodules.util import numpy_support
+from skimage import exposure
+import cv2
 
 class SceneManager:
 
@@ -188,7 +192,7 @@ class SceneManager:
 		self.window.Render()
 
 	# Create the actor displaying the XY slice
-	def createXYSliceActor(self, imagesPath, pixel_size_xy, section_thickness, x_size_pixels, y_size_pixels, num_images_to_read):
+	def createXYSliceActor(self, imagesPath, pixel_size_xy, section_thickness, x_size_pixels, y_size_pixels, num_images_to_read, image_type):
 		
 		# Update metadata
 		self.extent_x = x_size_pixels - 1
@@ -197,26 +201,43 @@ class SceneManager:
 
 		self.pixel_size_xy = pixel_size_xy
 		self.section_thickness = section_thickness
+		self.image_type = image_type
 
-		# PNG dataasets
-		reader = vtk.vtkPNGReader()
-		reader.SetFilePrefix(imagesPath + '\\') 
-		reader.SetFilePattern('%sImage_%05d.png')
-		reader.SetDataExtent(0, self.extent_x, 0, self.extent_y, 0, self.extent_z)
-		reader.SetDataSpacing(pixel_size_xy, pixel_size_xy, section_thickness)
-		reader.SetDataScalarTypeToUnsignedChar()
-		reader.SetNumberOfScalarComponents(1)
-	
-		# Extract VOI (first slice in stack)
-		self.imageXY = vtk.vtkExtractVOI()
-		self.imageXY.SetInputConnection(reader.GetOutputPort())
-		self.imageXY.SetVOI(0, self.extent_x, 0, self.extent_y, 0, 0)
-		self.imageXY.Update()
-  
+		if self.image_type == '.png':
+			# PNG dataasets
+			reader = vtk.vtkPNGReader()
+			reader.SetFilePrefix(imagesPath + '\\') 
+			reader.SetFilePattern('%sImage_%05d.png')
+			reader.SetDataExtent(0, self.extent_x, 0, self.extent_y, 0, self.extent_z)
+			reader.SetDataSpacing(self.pixel_size_xy, self.pixel_size_xy, self.section_thickness)
+			reader.SetDataScalarTypeToUnsignedChar()
+			reader.SetNumberOfScalarComponents(1)
+		
+			# Extract VOI (first slice in stack)
+			self.imageXY = vtk.vtkExtractVOI()
+			self.imageXY.SetInputConnection(reader.GetOutputPort())
+			self.imageXY.SetVOI(0, self.extent_x, 0, self.extent_y, 0, 0)
+			self.imageXY.Update()
+		else:
+			# Zarr datasets
+			dataset = zarr.open(imagesPath)
+			self.muse_dataset = dataset['muse']
+			image = np.flipud(np.squeeze(self.muse_dataset[0,:,:,:]))
+			image = self.adjust_contrast_zarr(image)
+			self.vtk_img = vtk.vtkImageData()
+			self.vtk_img.SetSpacing(self.pixel_size_xy, self.pixel_size_xy, self.section_thickness)
+			self.vtk_img.SetDimensions(image.shape[1], image.shape[0], 1)
+			self.vtk_img.AllocateScalars(vtk.VTK_UNSIGNED_CHAR, 1)
+			self.vtk_img.GetPointData().GetScalars().DeepCopy(numpy_support.numpy_to_vtk(np.reshape(image, (image.shape[1]*image.shape[0], 1))))
+
 		# Set up an imageActor
 		self.XYSliceActor = vtk.vtkImageActor()
-		self.XYSliceActor.SetPosition(-self.extent_x*pixel_size_xy / 2, -self.extent_y*pixel_size_xy / 2, -self.extent_z*section_thickness / 2)
-		self.XYSliceActor.GetMapper().SetInputConnection(self.imageXY.GetOutputPort())
+		self.XYSliceActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2, -self.extent_y*self.pixel_size_xy / 2,  (-self.extent_z *self.section_thickness / 2))
+
+		if self.image_type == '.png':
+			self.XYSliceActor.GetMapper().SetInputConnection(self.imageXY.GetOutputPort())
+		else:
+			self.XYSliceActor.GetMapper().SetInputData(self.vtk_img)
 		
 		# Set look up table and properties
 		ip = vtk.vtkImageProperty()
@@ -242,8 +263,21 @@ class SceneManager:
 		self.window.Render() 
 	
 	# Visualize the XY slice based on checkbox value and xy slice number from GUI
-	def visualizeXYSlice(self, value, isChecked):		
-		self.imageXY.SetVOI(0, self.extent_x, 0, self.extent_y, value, value)
+	def visualizeXYSlice(self, value, isChecked):	
+
+		if self.image_type == '.png':	
+			self.imageXY.SetVOI(0, self.extent_x, 0, self.extent_y, value, value)
+		else:			
+			image = np.flipud(np.squeeze(self.muse_dataset[value,:,:,:]))
+			image = self.adjust_contrast_zarr(image)
+			self.vtk_img.AllocateScalars(vtk.VTK_UNSIGNED_CHAR, 1)
+			self.vtk_img.GetPointData().GetScalars().DeepCopy(numpy_support.numpy_to_vtk(np.reshape(image, (image.shape[1]*image.shape[0], 1))))
+			self.XYSliceActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2, -self.extent_y*self.pixel_size_xy / 2, (-self.extent_z *self.section_thickness / 2) + (value*self.section_thickness))
+
+		if self.image_type == '.png':
+			self.XYSliceActor.GetMapper().SetInputConnection(self.imageXY.GetOutputPort())
+		else:
+			self.XYSliceActor.GetMapper().SetInputData(self.vtk_img)
 
 		if isChecked:
 			self.ren.AddActor(self.XYSliceActor)
@@ -725,3 +759,17 @@ class SceneManager:
 			self.toggleCameraParallelPerspective()
    
 			self.SetViewXY()
+
+	def adjust_contrast_zarr(self, image):
+		gamma = 0.75
+		vmin = 0
+		vmax = 2500
+
+		image[image > vmax] = vmax
+		image[image < vmin] = vmin
+
+		image = cv2.normalize(image, None, alpha = 0, beta = 255, norm_type = cv2.NORM_MINMAX, dtype = cv2.CV_32F)
+		image = exposure.adjust_gamma(image, gamma = gamma) 
+		image = np.floor(cv2.normalize(image, None, alpha = 0, beta = 255, norm_type = cv2.NORM_MINMAX, dtype = cv2.CV_32F)).astype('uint8')
+
+		return image

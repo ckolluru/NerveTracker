@@ -31,6 +31,7 @@ from dipy.segment.clustering import QuickBundles
 import distinctipy
 from PIL import Image
 from tools.compare_tractograms import compare_tractogram_clusters
+import ctypes
 
 # Load GUI
 Ui_MainWindow = loadUiType("mainwindow.ui")[0]
@@ -183,7 +184,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		# Add new actors for XY slice and BB
 		self.SceneManager.createXYSliceActor(self.imagesPath, self.metadata['pixel_size_xy'],
 											self.metadata['section_thickness'], self.metadata['x_size_pixels'],
-											self.metadata['y_size_pixels'], self.metadata['num_images_to_read'])
+											self.metadata['y_size_pixels'], self.metadata['num_images_to_read'], self.metadata['image_type'])
   
 		self.SceneManager.createBBActor()
 
@@ -1358,6 +1359,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		
 	def stack_flythrough(self):
 		
+		# Record screen with OBS studio before running this flythrough function
 		self.movieThread = MovieClass(self.metadata['num_images_to_read'])
 		self.movieThread.sliceSignal.connect(self.changeSlice)
 		self.movieThread.completeSignal.connect(self.flythroughComplete)
@@ -1366,7 +1368,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 if __name__ == '__main__':
 
 	app = QApplication(sys.argv)
-	app.setWindowIcon(QIcon('icon.jpg'))
+	app.setWindowIcon(QIcon('docs\icon.jpg'))
+
+	myappid = 'NerveTracker.v01' # arbitrary string
+	ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
  
 	mw = MainWindow()
 	mw.show()
