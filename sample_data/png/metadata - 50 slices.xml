@@ -3,8 +3,6 @@
     <pixel_size_xy name="0.9"/>
     <section_thickness name="3"/>
     <image_type name=".png"/>
-    <x_size_pixels name="4000"/>
-    <y_size_pixels name="3000"/>
     <num_images_to_read name="50"/>
     <step_size name="64"/>
 </root>

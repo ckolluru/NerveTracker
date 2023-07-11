@@ -718,7 +718,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	# Pick a color for streamlines from the ROI
 	def pickColorROI(self, listWidgetItem):
 		 
-		selected_indices = self.pickColorListWidget.selectionModel().selectedIndexes()
+		selected_indices = self.pickColorsListWidget.selectionModel().selectedIndexes()
 
 		if not len(selected_indices) == 1:	
 			msgBox = QMessageBox()
