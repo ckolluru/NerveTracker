@@ -1243,7 +1243,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			msgBox = QMessageBox()
 			msgBox.setText("Could not set XY view, ensure image metadata and mask images are set.")
 			msgBox.exec()
-			return None
 
 		self.radioButtonXY.setChecked(viewSetFlag)
 
