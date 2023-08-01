@@ -840,6 +840,19 @@
               </layout>
              </widget>
             </item>
+            <item>
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
            </layout>
           </widget>
          </widget>
@@ -861,8 +874,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>431</width>
-             <height>943</height>
+             <width>218</width>
+             <height>488</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_26">
