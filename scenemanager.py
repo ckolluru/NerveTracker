@@ -83,6 +83,9 @@ class SceneManager:
 	# Set view to XY
 	def SetViewXY(self):		
 		camera = self.ren.GetActiveCamera()
+  
+		if self.pixel_size_xy is None:
+			return False
    
 		if self.parallelView:
 			camera.SetFocalPoint(0, 0, 0)
@@ -105,6 +108,8 @@ class SceneManager:
 		camera.UpdateViewport(self.ren)
 		self.iren.ReInitialize()   
 		self.window.Render()
+
+		return True
 
 	# Set view to XZ
 	def SetViewXZ(self):     

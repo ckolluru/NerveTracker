@@ -1237,8 +1237,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 	def SetViewXY(self):
 
-		self.radioButtonXY.setChecked(True)
-		self.SceneManager.SetViewXY()
+		viewSetFlag = self.SceneManager.SetViewXY()  
+  
+		if not viewSetFlag:
+			msgBox = QMessageBox()
+			msgBox.setText("Could not set XY view, ensure image metadata and mask images are set.")
+			msgBox.exec()
+			return None
+
+		self.radioButtonXY.setChecked(viewSetFlag)
 
 	def SetViewXZ(self):
 		self.SceneManager.SetViewXZ()
