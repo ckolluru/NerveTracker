@@ -8,7 +8,7 @@ from tqdm import tqdm
 import random
 
 # Code for random selection of seed points within each fascicle
-def find_seed_points(mask_image, seeds_per_pixel):
+def get_random_seedpoints(mask_image, seeds_per_pixel):
 
 	random.seed(10)
 	
@@ -82,8 +82,6 @@ def find_seed_points(mask_image, seeds_per_pixel):
 				seed_point_coordinates[seeds_already_assigned + seed_counter, :] = [xy_indices[j,0], xy_indices[j,1]]
 				fascicle_tracker_seed_points[seeds_already_assigned + seed_counter] = fascicles_unique_values[i]
 				seed_counter = seed_counter + 1
-			
-
 
 		# Assign color for this group of seeds
 		color[seeds_already_assigned:seeds_already_assigned + seed_counter,:] = distinct_colors[i]
@@ -96,6 +94,33 @@ def find_seed_points(mask_image, seeds_per_pixel):
 	# Delete the last rows in the array that were not set (left at zero)
 	seed_point_coordinates = seed_point_coordinates[~np.all(seed_point_coordinates == 0, axis=1)]
 	color = color[~np.all(color == 0, axis=1)]
+	
+	return seed_point_coordinates, color
+
+# Get seed points from tractogram
+def get_seedpoints_from_tractogram(streamlines, colors, affine, y_size_pixels, slice_index):
+	
+	# Get z slice spacing in physical dimensions (microns)
+	z_spacing = affine[2,2]
+ 
+	# Get the z coordinate from which streamline coordinates should be picked
+	z_phys_coordinate = z_spacing * slice_index
+ 
+	# Create a container for the seed points
+	seed_point_coordinates = []
+	color = []
+ 
+	# Loop through the streamlines
+	for k in range(len(streamlines)):
+		current_streamline = streamlines[k]
+  
+		for i in range(current_streamline.shape[0]):
+			if current_streamline[i,2] == z_phys_coordinate:
+				seed_point_coordinates.append([current_streamline[i,0]/affine[0,0], y_size_pixels - (current_streamline[i,1]/affine[1,1])])
+				color.append(colors[k,:])
+	
+	seed_point_coordinates = np.array(seed_point_coordinates)
+	color = np.array(color)
 	
 	return seed_point_coordinates, color
 
@@ -117,7 +142,7 @@ def tractogram(streamlines, affine, y_size_pixels, progressMinimumSignal, progre
 		transformed_points = np.empty((len(current_streamline_points), 3))
 
 		for i in np.arange(len(current_streamline_points)):
-      
+	  
 			x = current_streamline_points[i][0]
 			y = current_streamline_points[i][1]
 			z = current_streamline_points[i][2]

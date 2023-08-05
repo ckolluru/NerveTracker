@@ -7,7 +7,8 @@ import glob
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from tools.tractogram_functions import find_seed_points, tractogram
+from tools.tractogram_functions import get_random_seedpoints, tractogram, get_seedpoints_from_tractogram
+import pickle
 from PyQt5 import QtCore
 import zarr
 
@@ -43,8 +44,8 @@ class OpticFlowClass(QtCore.QThread):
 						criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
   
   		# Find seed point coordinates, colors
-		self.seed_point_coordinates, self.color = find_seed_points(self.mask_image, self.seedsPerPixel)
-		
+		self.seed_point_coordinates, self.color = get_random_seedpoints(self.mask_image, self.seedsPerPixel)
+  	
 	# Optical flow using the Lucas Kanade algorithm
 	def run(self):
 	

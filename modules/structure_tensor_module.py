@@ -6,7 +6,7 @@ import math
 from skimage.measure import block_reduce
 import matplotlib.pyplot as plt
 import zarr
-from tools.tractogram_functions import find_seed_points, tractogram
+from tools.tractogram_functions import get_random_seedpoints, tractogram
 from PyQt5 import QtCore
 
 # CPU option
@@ -56,7 +56,7 @@ class StructureTensorClass(QtCore.QThread):
 		self.backwardTrackingFlag = backwardTrackingFlag
   
 		# Find seed point coordinates, colors
-		self.seed_point_coordinates, self.color = find_seed_points(self.mask_image, self.seedsPerPixel)
+		self.seed_point_coordinates, self.color = get_random_seedpoints(self.mask_image, self.seedsPerPixel)
   
   	# Structure tensor analysis - set up VOIs to process, merge streamlines when done
 	def run(self):
