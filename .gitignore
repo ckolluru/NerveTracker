@@ -3,3 +3,6 @@ __pycache__/
 
 # Pickle files
 pickle files/
+
+# Local testing
+testing/
