@@ -142,7 +142,7 @@ class StructureTensorClass(QtCore.QThread):
 		us_factor = 1 / ds_factor
   
 		# Angle threshold (75 degrees) in pixels, all ST computation is down after downsampling in XY to get near isotropic voxels
-		angle_threshold_pixels = int(np.tan(np.deg2rad(75)) * self.metadata['section_thickness'] / (self.metadata['pixel_size_xy'] * ds_factor))
+		angle_threshold_pixels = int(np.tan(np.deg2rad(75)) * self.metadata['image_slice_thickness'] / (self.metadata['pixel_size_xy'] * ds_factor))
 		
 		stack_finished_flag = False
 

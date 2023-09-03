@@ -121,7 +121,7 @@ class OpticFlowClass(QtCore.QThread):
 			muse_dataset = dataset['muse']
   
 		# Angle threshold (75 degrees) in pixels
-		angle_threshold_pixels = int(np.tan(np.deg2rad(75)) * self.metadata['section_thickness'] / self.metadata['pixel_size_xy'])
+		angle_threshold_pixels = int(np.tan(np.deg2rad(75)) * self.metadata['image_slice_thickness'] / self.metadata['pixel_size_xy'])
 		
 		# Loop through each frame, update list of points to track, streamlines
 		for i in tqdm(np.arange(startSliceIndex, stopSliceIndex, direction)):

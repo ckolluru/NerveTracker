@@ -62,7 +62,7 @@ class SceneManager:
 		self.extent_y = None
 		self.extent_z = None
 		self.pixel_size_xy = None
-		self.section_thickness = None
+		self.image_slice_thickness = None
 
 		# Create orientation axes
 		axes = vtk.vtkAxesActor()
@@ -120,7 +120,7 @@ class SceneManager:
 			camera.SetFocalPoint(0, 0, 0)
 			camera.SetViewUp(0, 0, 1)
 
-			zd = self.extent_z * self.section_thickness
+			zd = self.extent_z * self.image_slice_thickness
 			d = camera.GetDistance()
 			camera.SetParallelScale(0.5*zd)
 			camera.SetPosition(0, d, 0)
@@ -129,7 +129,7 @@ class SceneManager:
 			camera.SetViewUp(0, 0, 1)
    
 			d = camera.GetDistance()
-			h = 0.5 * self.extent_z * self.section_thickness
+			h = 0.5 * self.extent_z * self.image_slice_thickness
 			camera.SetViewAngle(30)
 			d = h / (math.tan(math.pi/12))
 			camera.SetPosition(0, d, 0)
@@ -147,7 +147,7 @@ class SceneManager:
 			camera.SetFocalPoint(0, 0, 0)
 			camera.SetViewUp(0, 0, 1)
 
-			zd = self.extent_z * self.section_thickness
+			zd = self.extent_z * self.image_slice_thickness
 			d = camera.GetDistance()
 			camera.SetParallelScale(0.5*zd)
 			camera.SetPosition(d, 0, 0)
@@ -156,7 +156,7 @@ class SceneManager:
 			camera.SetViewUp(0, 0, 1)
 
 			d = camera.GetDistance()
-			h = 0.5 * self.extent_z * self.section_thickness
+			h = 0.5 * self.extent_z * self.image_slice_thickness
 			camera.SetViewAngle(30)
 			d = h / (math.tan(math.pi/12))
 			camera.SetPosition(d, 0, 0)
@@ -197,7 +197,7 @@ class SceneManager:
 		self.window.Render()
 
 	# Create the actor displaying the XY slice
-	def createXYSliceActor(self, imagesPath, pixel_size_xy, section_thickness, x_size_pixels, y_size_pixels, num_images_to_read, image_type):
+	def createXYSliceActor(self, imagesPath, pixel_size_xy, image_slice_thickness, x_size_pixels, y_size_pixels, num_images_to_read, image_type):
 		
 		# Update metadata
 		self.extent_x = x_size_pixels - 1
@@ -205,7 +205,7 @@ class SceneManager:
 		self.extent_z = num_images_to_read - 1
 
 		self.pixel_size_xy = pixel_size_xy
-		self.section_thickness = section_thickness
+		self.image_slice_thickness = image_slice_thickness
 		self.image_type = image_type
 
 		if self.image_type == '.png':
@@ -214,7 +214,7 @@ class SceneManager:
 			reader.SetFilePrefix(imagesPath + '\\') 
 			reader.SetFilePattern('%sImage_%05d.png')
 			reader.SetDataExtent(0, self.extent_x, 0, self.extent_y, 0, self.extent_z)
-			reader.SetDataSpacing(self.pixel_size_xy, self.pixel_size_xy, self.section_thickness)
+			reader.SetDataSpacing(self.pixel_size_xy, self.pixel_size_xy, self.image_slice_thickness)
 			reader.SetDataScalarTypeToUnsignedChar()
 			reader.SetNumberOfScalarComponents(1)
 		
@@ -230,14 +230,14 @@ class SceneManager:
 			image = np.flipud(np.squeeze(self.muse_dataset[0,:,:,:]))
 			image = self.adjust_contrast_zarr(image)
 			self.vtk_img = vtk.vtkImageData()
-			self.vtk_img.SetSpacing(self.pixel_size_xy, self.pixel_size_xy, self.section_thickness)
+			self.vtk_img.SetSpacing(self.pixel_size_xy, self.pixel_size_xy, self.image_slice_thickness)
 			self.vtk_img.SetDimensions(image.shape[1], image.shape[0], 1)
 			self.vtk_img.AllocateScalars(vtk.VTK_UNSIGNED_CHAR, 1)
 			self.vtk_img.GetPointData().GetScalars().DeepCopy(numpy_support.numpy_to_vtk(np.reshape(image, (image.shape[1]*image.shape[0], 1))))
 
 		# Set up an imageActor
 		self.XYSliceActor = vtk.vtkImageActor()
-		self.XYSliceActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2, -self.extent_y*self.pixel_size_xy / 2,  (-self.extent_z *self.section_thickness / 2))
+		self.XYSliceActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2, -self.extent_y*self.pixel_size_xy / 2,  (-self.extent_z *self.image_slice_thickness / 2))
 
 		if self.image_type == '.png':
 			self.XYSliceActor.GetMapper().SetInputConnection(self.imageXY.GetOutputPort())
@@ -277,7 +277,7 @@ class SceneManager:
 			image = self.adjust_contrast_zarr(image)
 			self.vtk_img.AllocateScalars(vtk.VTK_UNSIGNED_CHAR, 1)
 			self.vtk_img.GetPointData().GetScalars().DeepCopy(numpy_support.numpy_to_vtk(np.reshape(image, (image.shape[1]*image.shape[0], 1))))
-			self.XYSliceActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2, -self.extent_y*self.pixel_size_xy / 2, (-self.extent_z *self.section_thickness / 2) + (value*self.section_thickness))
+			self.XYSliceActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2, -self.extent_y*self.pixel_size_xy / 2, (-self.extent_z *self.image_slice_thickness / 2) + (value*self.image_slice_thickness))
 
 		if self.image_type == '.png':
 			self.XYSliceActor.GetMapper().SetInputConnection(self.imageXY.GetOutputPort())
@@ -318,7 +318,7 @@ class SceneManager:
 		self.streamlinesActor.GetProperty().SetPointSize(3)
 		self.streamlinesActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2,
 										  -self.extent_y*self.pixel_size_xy / 2,
-										  -self.extent_z*self.section_thickness / 2)
+										  -self.extent_z*self.image_slice_thickness / 2)
 		
 		self.streamlinesActor.SetMapper(self.streamline_poly_mapper)
 		self.streamlinesActor.GetProperty().SetLineWidth(1)
@@ -380,7 +380,7 @@ class SceneManager:
 			self.clustersActor.GetProperty().SetPointSize(3)
 			self.clustersActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2,
 							-self.extent_y*self.pixel_size_xy / 2,
-							-self.extent_z*self.section_thickness / 2)
+							-self.extent_z*self.image_slice_thickness / 2)
 
 			self.clustersActor.SetMapper(self.clusters_poly_mapper)
 			self.clustersActor.GetProperty().SetLineWidth(3)
@@ -424,13 +424,13 @@ class SceneManager:
 		if self.streamlinesActor is not None:
 
 			if isChecked:
-				clipping_plane_origin_offset = -self.extent_z*self.section_thickness / 2
+				clipping_plane_origin_offset = -self.extent_z*self.image_slice_thickness / 2
 				bottom_clipping_plane = vtk.vtkPlane()
-				bottom_clipping_plane.SetOrigin(0, 0, clipping_plane_origin_offset + (np.max([0, z - value]) *self.section_thickness))
+				bottom_clipping_plane.SetOrigin(0, 0, clipping_plane_origin_offset + (np.max([0, z - value]) *self.image_slice_thickness))
 				bottom_clipping_plane.SetNormal(0, 0, 1)
 
 				top_clipping_plane = vtk.vtkPlane()
-				top_clipping_plane.SetOrigin(0, 0, clipping_plane_origin_offset + (np.min([self.extent_z, z + value]) * self.section_thickness)) 
+				top_clipping_plane.SetOrigin(0, 0, clipping_plane_origin_offset + (np.min([self.extent_z, z + value]) * self.image_slice_thickness)) 
 				top_clipping_plane.SetNormal(0, 0, -1)
 
 				self.streamlinesActor.GetMapper().RemoveAllClippingPlanes()
@@ -442,13 +442,13 @@ class SceneManager:
 		if self.clustersActor is not None:
 
 			if isChecked:
-				clipping_plane_origin_offset = -self.extent_z*self.section_thickness / 2
+				clipping_plane_origin_offset = -self.extent_z*self.image_slice_thickness / 2
 				bottom_clipping_plane = vtk.vtkPlane()
-				bottom_clipping_plane.SetOrigin(0, 0, clipping_plane_origin_offset + (z *self.section_thickness))
+				bottom_clipping_plane.SetOrigin(0, 0, clipping_plane_origin_offset + (z *self.image_slice_thickness))
 				bottom_clipping_plane.SetNormal(0, 0, 1)
 
 				top_clipping_plane = vtk.vtkPlane()
-				top_clipping_plane.SetOrigin(0, 0, clipping_plane_origin_offset + (np.min([self.extent_z, z + value]) * self.section_thickness)) 
+				top_clipping_plane.SetOrigin(0, 0, clipping_plane_origin_offset + (np.min([self.extent_z, z + value]) * self.image_slice_thickness)) 
 				top_clipping_plane.SetNormal(0, 0, -1)
 
 				self.clustersActor.GetMapper().RemoveAllClippingPlanes()
@@ -598,7 +598,7 @@ class SceneManager:
 		
 		x_max = self.extent_x * self.pixel_size_xy
 		y_max = self.extent_y * self.pixel_size_xy
-		z_max = self.extent_z * self.section_thickness
+		z_max = self.extent_z * self.image_slice_thickness
 
 		bounding_box_coordinates = [np.asarray([[0, 0, 0],[x_max, 0, 0],[x_max, y_max, 0],[0, y_max, 0],[0, 0, 0]]),
 							  		np.asarray([[0, 0, z_max],[x_max, 0, z_max],[x_max, y_max, z_max],[0, y_max, z_max],[0, 0, z_max]]),
@@ -620,7 +620,7 @@ class SceneManager:
 		self.bbActor.GetProperty().SetPointSize(3)
 		self.bbActor.SetPosition(-self.extent_x*self.pixel_size_xy / 2,
 							-self.extent_y*self.pixel_size_xy / 2,
-							-self.extent_z*self.section_thickness / 2)
+							-self.extent_z*self.image_slice_thickness / 2)
 		
 		self.bbActor.SetMapper(bb_poly_mapper)
 		self.bbActor.GetProperty().SetLineWidth(1)
@@ -669,7 +669,7 @@ class SceneManager:
 		polyDataToImageStencil.SetTolerance(0)
 		polyDataToImageStencil.SetInputData(path)
 		polyDataToImageStencil.SetOutputOrigin(-self.extent_x* self.pixel_size_xy / 2, -self.extent_y * self.pixel_size_xy  / 2, 0)
-		polyDataToImageStencil.SetOutputSpacing(self.pixel_size_xy, self.pixel_size_xy, self.section_thickness)
+		polyDataToImageStencil.SetOutputSpacing(self.pixel_size_xy, self.pixel_size_xy, self.image_slice_thickness)
 		polyDataToImageStencil.SetOutputWholeExtent(0, self.extent_x - 1, 0, self.extent_y - 1, 0, 0)
 		polyDataToImageStencil.Update()
 		

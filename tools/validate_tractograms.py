@@ -72,7 +72,7 @@ def validate(streamlinesFilePath, colorsFile, validation_masks, validationMetada
 	ds_factor = validationMetadata['ds_factor']
 	normalize_wrt_slice_physical_distance_microns_array_index = validationMetadata['normalize_wrt_slice_physical_distance_microns_array_index']
 
-	slice_physical_distance_microns = np.array(validationMetadata['slice_numbers_to_evaluate']) * validationMetadata['section_thickness']
+	slice_physical_distance_microns = np.array(validationMetadata['slice_numbers_to_evaluate']) * validationMetadata['image_slice_thickness']
 	image_width = int(validationMetadata['image_width'] / ds_factor)
 	image_height = int(validationMetadata['image_height']  / ds_factor)
 	pixel_size = (validationMetadata['pixel_size'] * ds_factor)

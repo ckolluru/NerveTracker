@@ -35,7 +35,7 @@ class MetadataDialogBox(QDialog):
 		# Create the layout and add the widgets to it
 		layout = QFormLayout()
 		layout.addRow(self.label1, self.pixel_size_xy)
-		layout.addRow(self.label2, self.section_thickness)
+		layout.addRow(self.label2, self.image_slice_thickness)
 		layout.addRow(self.label3, self.num_images_to_read)
 		layout.addRow(self.label4, self.chunk_size_z)
   
@@ -66,7 +66,7 @@ class MetadataDialogBox(QDialog):
     
 		metadata = dict()
 		metadata['pixel_size_xy'] = 0.9
-		metadata['section_thickness'] = 3.0
+		metadata['image_slice_thickness'] = 3.0
 		metadata['image_type'] = '.png'
 		metadata['num_images_to_read'] = 1500
 		metadata['step_size'] = 64
@@ -78,8 +78,8 @@ class MetadataDialogBox(QDialog):
 
 		self.label1 = QLabel('Pixel size (XY) in microns:', self)
 		self.pixel_size_xy = QLineEdit(str(self.metadata['pixel_size_xy']), self)
-		self.label2 = QLabel('Section thickness in microns:', self)
-		self.section_thickness = QLineEdit(str(self.metadata['section_thickness']), self)
+		self.label2 = QLabel('Image slice thickness in microns:', self)
+		self.image_slice_thickness = QLineEdit(str(self.metadata['image_slice_thickness']), self)
 		self.label3 = QLabel('Number of images to read:', self)
 		self.num_images_to_read = QLineEdit(str(self.metadata['num_images_to_read']), self)
 		self.label4 = QLabel('Chunk size in Z (used for ST analysis):', self)
@@ -89,7 +89,7 @@ class MetadataDialogBox(QDialog):
 	def updateDialogBox(self):
     
 		self.pixel_size_xy.setText(str(self.metadata['pixel_size_xy']))
-		self.section_thickness.setText(str(self.metadata['section_thickness']))
+		self.image_slice_thickness.setText(str(self.metadata['image_slice_thickness']))
 		self.num_images_to_read.setText(str(self.metadata['num_images_to_read']))
 		self.chunk_size_z.setText(str(self.metadata['step_size']))
   
@@ -101,7 +101,7 @@ class MetadataDialogBox(QDialog):
 	# Define a method to return the user input when the dialog is accepted
 	def get_metadata(self):
 		self.metadata['pixel_size_xy'] = float(self.pixel_size_xy.text())
-		self.metadata['section_thickness'] = float(self.section_thickness.text())
+		self.metadata['image_slice_thickness'] = float(self.image_slice_thickness.text())
 		self.metadata['num_images_to_read'] = int(self.num_images_to_read.text())
 		self.metadata['step_size'] = int(self.chunk_size_z.text())
   
@@ -128,7 +128,7 @@ class MetadataDialogBox(QDialog):
 		doc = untangle.parse(self.imageMetadataXMLFileName[0])
 
 		self.metadata['pixel_size_xy'] = float(doc.root.pixel_size_xy['name'])
-		self.metadata['section_thickness'] = float(doc.root.section_thickness['name'])
+		self.metadata['image_slice_thickness'] = float(doc.root.image_slice_thickness['name'])
 		self.metadata['image_type'] = doc.root.image_type['name']
 		self.metadata['num_images_to_read'] = int(doc.root.num_images_to_read['name'])
 		self.metadata['step_size'] = int(doc.root.step_size['name'])
@@ -163,7 +163,7 @@ class MetadataDialogBox(QDialog):
 				file.write('<?xml version="1.0"?>\n')  
 				file.write('<root>\n')
 				file.write('\t<pixel_size_xy name="{}"/>\n'.format(self.metadata['pixel_size_xy']))
-				file.write('\t<section_thickness name="{}"/>\n'.format(self.metadata['section_thickness']))
+				file.write('\t<image_slice_thickness name="{}"/>\n'.format(self.metadata['image_slice_thickness']))
 				file.write('\t<image_type name="{}"/>\n'.format(self.metadata['image_type']))
 				file.write('\t<num_images_to_read name="{}"/>\n'.format(self.metadata['num_images_to_read']))
 				file.write('\t<step_size name="{}"/>\n'.format(self.metadata['step_size']))
@@ -184,7 +184,7 @@ class ValidationMetadataDialogBox(QDialog):
 		# Create the layout and add the widgets to it
 		layout = QFormLayout()
 		layout.addRow(self.label1, self.ds_factor)
-		layout.addRow(self.label2, self.section_thickness)
+		layout.addRow(self.label2, self.image_slice_thickness)
 		layout.addRow(self.label3, self.slice_nums_to_evaluate)
 		layout.addRow(self.label4, self.normalize_index)
 		layout.addRow(self.label5, self.image_height)
@@ -210,7 +210,7 @@ class ValidationMetadataDialogBox(QDialog):
 		# sample 1
 		metadata = dict()
 		metadata['ds_factor'] = 1
-		metadata['section_thickness'] = 3.0
+		metadata['image_slice_thickness'] = 3.0
 		metadata['slice_numbers_to_evaluate'] = "0, 499, 999, 1499"
 		metadata['normalize_wrt_slice_physical_distance_microns_array_index'] = 0
 		metadata['image_height'] = 3000
@@ -219,7 +219,7 @@ class ValidationMetadataDialogBox(QDialog):
   
 		# sample 2
 		# metadata['ds_factor'] = 1
-		# metadata['section_thickness'] = 3.0
+		# metadata['image_slice_thickness'] = 3.0
 		# metadata['slice_numbers_to_evaluate'] = "0, 300, 600, 902"
 		# metadata['normalize_wrt_slice_physical_distance_microns_array_index'] = 0
 		# metadata['image_height'] = 2380
@@ -233,8 +233,8 @@ class ValidationMetadataDialogBox(QDialog):
 
 		self.label1 = QLabel('Downsampling factor:', self)
 		self.ds_factor = QLineEdit(str(self.metadata['ds_factor']), self)
-		self.label2 = QLabel('Section thickness in microns:', self)
-		self.section_thickness = QLineEdit(str(self.metadata['section_thickness']), self)
+		self.label2 = QLabel('Image slice thickness in microns:', self)
+		self.image_slice_thickness = QLineEdit(str(self.metadata['image_slice_thickness']), self)
 		self.label3 = QLabel('Slice numbers to evaluate at (seperated by commas):', self)
 		self.slice_nums_to_evaluate = QLineEdit(str(self.metadata['slice_numbers_to_evaluate']), self)
 		self.label4 = QLabel('Normalize w.r.t slice array index:', self)
@@ -249,7 +249,7 @@ class ValidationMetadataDialogBox(QDialog):
 	# Define a method to return the user input when the dialog is accepted
 	def get_metadata(self):
 		self.metadata['ds_factor'] = float(self.ds_factor.text())
-		self.metadata['section_thickness'] = float(self.section_thickness.text())
+		self.metadata['image_slice_thickness'] = float(self.image_slice_thickness.text())
 		slice_nums_string = self.slice_nums_to_evaluate.text()
 		self.metadata['slice_numbers_to_evaluate'] =  [int(i) for i in slice_nums_string.split(',')]  		
 		self.metadata['normalize_wrt_slice_physical_distance_microns_array_index'] = int(self.normalize_index.text())

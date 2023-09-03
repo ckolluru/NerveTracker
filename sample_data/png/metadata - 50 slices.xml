@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <root>
     <pixel_size_xy name="0.9"/>
-    <section_thickness name="3"/>
+    <image_slice_thickness name="3"/>
     <image_type name=".png"/>
     <num_images_to_read name="50"/>
     <step_size name="64"/>

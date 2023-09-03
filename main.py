@@ -169,7 +169,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.affine = np.eye(4)
 		self.affine[0, 0] = self.metadata['pixel_size_xy']
 		self.affine[1, 1] = self.metadata['pixel_size_xy']
-		self.affine[2, 2] = self.metadata['section_thickness']
+		self.affine[2, 2] = self.metadata['image_slice_thickness']
 			
 		# Update slice view sliders and streamline clip slider
 		self.xySlider.setMaximum(self.metadata['num_images_to_read'] - 1)
@@ -183,7 +183,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
   
 		# Add new actors for XY slice and BB
 		self.SceneManager.createXYSliceActor(self.imagesPath, self.metadata['pixel_size_xy'],
-											self.metadata['section_thickness'], self.metadata['x_size_pixels'],
+											self.metadata['image_slice_thickness'], self.metadata['x_size_pixels'],
 											self.metadata['y_size_pixels'], self.metadata['num_images_to_read'], self.metadata['image_type'])
   
 		self.SceneManager.createBBActor()
@@ -191,7 +191,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		validator = QIntValidator(0, self.metadata['num_images_to_read'] - 1, self.tracksStartingSliceIndex)
 		self.tracksStartingSliceIndex.setValidator(validator)
   
-		self.downsampleFactor = str(int(round(self.metadata['section_thickness'] / self.metadata['pixel_size_xy'])))
+		self.downsampleFactor = str(int(round(self.metadata['image_slice_thickness'] / self.metadata['pixel_size_xy'])))
   
 		self.statusBar().showMessage('Metadata reading complete', 2000)
   
@@ -898,7 +898,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 	# Remove tracks through ROI
 	def removeTracksThroughROI(self):
-		sliceZcoordinates_physical = self.startSliceIndex * self.metadata['section_thickness']
+		sliceZcoordinates_physical = self.startSliceIndex * self.metadata['image_slice_thickness']
 		mask_image = Image.open('user-selection.png')
 		mask_image = np.asarray(mask_image)
   
@@ -956,7 +956,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	
 	# Remove tracks from ROI
 	def removeTracksFromROI(self):
-		sliceZcoordinates_physical = self.startSliceIndex * self.metadata['section_thickness']		
+		sliceZcoordinates_physical = self.startSliceIndex * self.metadata['image_slice_thickness']		
 		mask_image = Image.open('user-selection.png')
 		mask_image = np.asarray(mask_image)
 		
@@ -1079,7 +1079,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
    
 			current_streamline[:,0] = (current_streamline[:,0] - offset[0]) / self.metadata['pixel_size_xy']
 			current_streamline[:,1] = self.metadata['y_size_pixels'] - ((current_streamline[:,1] - offset[1]) / self.metadata['pixel_size_xy'])
-			current_streamline[:,2] = (current_streamline[:,2] - offset[2]) / self.metadata['section_thickness']
+			current_streamline[:,2] = (current_streamline[:,2] - offset[2]) / self.metadata['image_slice_thickness']
 
 			current_streamline = current_streamline.astype(int)
    
