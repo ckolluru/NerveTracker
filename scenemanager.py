@@ -9,6 +9,7 @@ import zarr
 from vtkmodules.util import numpy_support
 from skimage import exposure
 import cv2
+from PIL import Image
 
 class SceneManager:
 
@@ -670,7 +671,7 @@ class SceneManager:
 		polyDataToImageStencil.SetInputData(path)
 		polyDataToImageStencil.SetOutputOrigin(-self.extent_x* self.pixel_size_xy / 2, -self.extent_y * self.pixel_size_xy  / 2, 0)
 		polyDataToImageStencil.SetOutputSpacing(self.pixel_size_xy, self.pixel_size_xy, self.image_slice_thickness)
-		polyDataToImageStencil.SetOutputWholeExtent(0, self.extent_x - 1, 0, self.extent_y - 1, 0, 0)
+		polyDataToImageStencil.SetOutputWholeExtent(0, self.extent_x, 0, self.extent_y, 0, 0)
 		polyDataToImageStencil.Update()
 		
 		imageStencilToImage = vtk.vtkImageStencilToImage()
@@ -680,13 +681,59 @@ class SceneManager:
 		
 		# Write user ROI to mask image, we will read from here into numpy array for later
 		writer = vtk.vtkPNGWriter()
-		writer.SetFileName('user-selection.png')
+		writer.SetFileName('.\\masks\\user-selection.png')
 		writer.SetInputConnection(imageStencilToImage.GetOutputPort())
 		writer.Write()
  
-	# Set up a contour tracing widget
-	def tracerWidget(self):
+	# When an ROI is drawn for a mask, update the image on disk	
+	def MaskDrawUpdate(self, caller, event = None, calldata = None):
+		
+		# Get user drawn ROI as path
+		path = self.contourWidget.GetContourRepresentation().GetContourRepresentationAsPolyData()			
+		
+		# Convert ROI to mask
+		polyDataToImageStencil = vtk.vtkPolyDataToImageStencil()
+		polyDataToImageStencil.SetTolerance(0)
+		polyDataToImageStencil.SetInputData(path)
+		polyDataToImageStencil.SetOutputOrigin(-self.extent_x* self.pixel_size_xy / 2, -self.extent_y * self.pixel_size_xy  / 2, 0)
+		polyDataToImageStencil.SetOutputSpacing(self.pixel_size_xy, self.pixel_size_xy, self.image_slice_thickness)
+		polyDataToImageStencil.SetOutputWholeExtent(0, self.extent_x, 0, self.extent_y, 0, 0)
+		polyDataToImageStencil.Update()
+		
+		imageStencilToImage = vtk.vtkImageStencilToImage()
+		imageStencilToImage.SetInputConnection(polyDataToImageStencil.GetOutputPort())
+		imageStencilToImage.SetInsideValue(255)
+		imageStencilToImage.Update()
+		
+		# Write user ROI to mask image, we will read from here into numpy array for later
+		writer = vtk.vtkPNGWriter()
   
+		# If the file doesn't exist, create one, else read from existing mask and update
+		mask_path = '.\\masks\\mask-image-slice-' + str(self.mask_slice_index) + '.png'
+  
+		if not os.path.exists(mask_path):
+			writer.SetFileName(mask_path)
+			writer.SetInputConnection(imageStencilToImage.GetOutputPort())
+			writer.Write()
+   
+		else:
+			prev_image = np.array(Image.open(mask_path)).astype(np.uint8)
+   
+			temp = numpy_support.vtk_to_numpy(imageStencilToImage.GetOutput().GetPointData().GetScalars())
+			dims = imageStencilToImage.GetOutput().GetDimensions()
+			current_mask_roi = temp.reshape(dims[1], dims[0])
+			current_mask_roi = np.flipud(current_mask_roi)
+   
+			updated_image = prev_image + current_mask_roi
+			updated_image = Image.fromarray(updated_image)
+			updated_image.save(mask_path)
+
+	# Set up a contour tracing widget
+	def tracerWidget(self, drawing_type, slice_index):
+  
+		# Set a variable to track which image slice is being updated (used for drawing mask, not ROI)
+		self.mask_slice_index = slice_index
+
 		# Change interactor style to image view
 		self.iren.SetInteractorStyle(vtk.vtkInteractorStyleImage())  
   
@@ -696,7 +743,13 @@ class SceneManager:
 		contourRepresentation.GetLinesProperty().SetColor([1, 0, 0])
 		contourRepresentation.SetAlwaysOnTop(1)
 		self.contourWidget.SetRepresentation(contourRepresentation)
-		self.contourWidget.AddObserver(vtk.vtkCommand.EndInteractionEvent, self.ROIDrawComplete)	
+  
+		if drawing_type == 'roi':
+			self.contourWidget.AddObserver(vtk.vtkCommand.EndInteractionEvent, self.ROIDrawComplete)	
+
+		else:
+			self.contourWidget.AddObserver(vtk.vtkCommand.EndInteractionEvent, self.MaskDrawUpdate)
+   
 		self.contourWidget.SetInteractor(self.iren) 
 
 		# Switch on the contour widget

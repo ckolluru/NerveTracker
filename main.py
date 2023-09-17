@@ -700,7 +700,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	# Draw ROI slot, creates the tracer widget
 	def drawROI(self):
 		self.startSliceIndex = int(self.XYSliceEdit2.text())
-		self.SceneManager.tracerWidget()
+		self.SceneManager.tracerWidget('roi', self.startSliceIndex)
 		self.statusBar().showMessage('Draw a closed contour.', 3000)	
 
 	# Create a new color and add to list
@@ -832,7 +832,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			return None    
   
 		# Start tracking from this slice and use image ROI as mask
-		mask_image = Image.open('user-selection.png')
+		mask_image = Image.open('.\\masks\\user-selection.png')
 		mask_image = np.asarray(mask_image)
 
 		self.opticFlowThread = OpticFlowClass(self.imagesPath, mask_image,
@@ -880,7 +880,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			return None    
 
 		# Start tracking from this slice and use image ROI as mask
-		mask_image = Image.open('user-selection.png')
+		mask_image = Image.open('.\\masks\\user-selection.png')
 		mask_image = np.asarray(mask_image)
   
 		self.structureTensorThread = StructureTensorClass(self.imagesPath, mask_image,
@@ -899,7 +899,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	# Remove tracks through ROI
 	def removeTracksThroughROI(self):
 		sliceZcoordinates_physical = self.startSliceIndex * self.metadata['image_slice_thickness']
-		mask_image = Image.open('user-selection.png')
+		mask_image = Image.open('.\\masks\\user-selection.png')
 		mask_image = np.asarray(mask_image)
   
 		trackIndicesToDelete = []
@@ -957,7 +957,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 	# Remove tracks from ROI
 	def removeTracksFromROI(self):
 		sliceZcoordinates_physical = self.startSliceIndex * self.metadata['image_slice_thickness']		
-		mask_image = Image.open('user-selection.png')
+		mask_image = Image.open('.\\masks\\user-selection.png')
 		mask_image = np.asarray(mask_image)
 		
 		trackIndicesToDelete = []
@@ -991,8 +991,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.statusBar().showMessage('Deleted tracks arising from selected ROI', 3000)       
   
   		# Remove contour
-		self.SceneManager.removeContour()          
+		self.SceneManager.removeContour() 
+  
+	# Draw a mask for an arbitrary image from the software
+	def drawMask(self):
+		self.sliceIndex = int(self.XYSliceEdit2.text())
+		self.SceneManager.tracerWidget('mask', self.sliceIndex)
+		self.statusBar().showMessage('Draw one closed contour at a time to create a mask for this slice.', 3000)	 
 	
+	# Finish drawing mask
+	def finishDrawingMask(self):
+     
+  		# Remove contour
+		self.SceneManager.removeContour() 
+     
 	# Processing if the anatomically constrain streamlines button is pressed
 	def anatomicallyConstrainStreamlines(self):
 		if self.fascicleSegmentationsPath is None:

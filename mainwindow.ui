@@ -60,7 +60,7 @@
        <enum>Qt::StrongFocus</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="visualizationTab">
        <attribute name="title">
@@ -874,8 +874,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>218</width>
-             <height>488</height>
+             <width>431</width>
+             <height>943</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_26">
@@ -1098,7 +1098,7 @@
               <item>
                <widget class="QPushButton" name="removeTracksFromCurrentROIButton">
                 <property name="text">
-                 <string>Remvoe tracks arising from current ROI</string>
+                 <string>Remove tracks arising from current ROI</string>
                 </property>
                </widget>
               </item>
@@ -1110,6 +1110,29 @@
                </widget>
               </item>
              </layout>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="createMaskGroupBox">
+              <property name="title">
+               <string>Create mask</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_27">
+               <item>
+                <widget class="QPushButton" name="drawMaskButton">
+                 <property name="text">
+                  <string>Draw mask (press after each ROI drawn)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="finishDrawingMaskButton">
+                 <property name="text">
+                  <string>Finish drawing mask</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
             <item>
              <spacer name="verticalSpacer_2">
@@ -2278,6 +2301,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>drawMaskButton</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>drawMask()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>236</x>
+     <y>694</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>698</x>
+     <y>523</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>finishDrawingMaskButton</sender>
+   <signal>released()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>finishDrawingMask()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>236</x>
+     <y>723</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>698</x>
+     <y>523</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>OpenFolderImages()</slot>
@@ -2330,5 +2385,7 @@
   <slot>visualizeStreamlinesByColor()</slot>
   <slot>validateTractograms()</slot>
   <slot>stack_flythrough()</slot>
+  <slot>drawMask()</slot>
+  <slot>finishDrawingMask()</slot>
  </slots>
 </ui>
