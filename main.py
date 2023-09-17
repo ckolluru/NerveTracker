@@ -80,12 +80,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 		self.tabWidget.setCurrentWidget(self.visualizationTab)
 		self.ieTabSelected = 0
 
-		# Disable interactive editing tab until streamlines are created/loaded
+		# Disable interactive editing tab until streamlines are created/loaded or image, mask and metadata are loaded
 		self.tabWidget.setTabEnabled(1, False)
   
 		# Threads for optic flow analysis and structure tensor analysis
 		self.opticFlowThread = None
 		self.structureTensorThread = None
+  
+		# Flags to describe whether image stack and metadata are successfully loaded
+		self.imageStackAvailable = False
+		self.metadataAvailable = False
   
 		# Validate inputs
 		winSizeValidator = QIntValidator(3, 1000, self.windowSizeEdit)
@@ -110,6 +114,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			self.imagesPath = None
 			return
 		
+		self.imageStackAvailable = True
+  
 		self.statusBar().showMessage('Image folder location saved', 2000)
 
 	# Open and load the mask image to memory
@@ -124,7 +130,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			self.maskImageForSeedsFilePath = None
 			return
 
-		self.LoadMaskImage()
+		self.LoadMaskImage()  
 		self.statusBar().showMessage('Mask image location saved', 2000)
 
 	# Read metadata from a dialog box or pre-defined XML file
@@ -193,6 +199,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
   
 		self.downsampleFactor = str(int(round(self.metadata['image_slice_thickness'] / self.metadata['pixel_size_xy'])))
   
+		self.metadataAvailable = True
+  
+		if self.imageStackAvailable and self.metadataAvailable:
+			self.tabWidget.setTabEnabled(1, True)
+   
 		self.statusBar().showMessage('Metadata reading complete', 2000)
   
 	# Save path to the fascicle segmentation masks
@@ -669,26 +680,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 			self.ieTabSelected = True
 			self.SceneManager.interactiveEditingTabSelected()	
    
-			self.pickColorsListWidget.clear()
+			if self.streamlines is not None:
+   
+				self.pickColorsListWidget.clear()
+		
+				for i in np.arange(self.unique_colors.shape[0]):
+					listItem = QListWidgetItem('')
+					listItem.setBackground(QColor(int(self.unique_colors[i][0] * 255), int(self.unique_colors[i][1] * 255),
+												int(self.unique_colors[i][2] * 255), 200))
+					self.pickColorsListWidget.addItem(listItem)
+
+				self.pickColorsListWidget.setSelectionMode(QAbstractItemView.SingleSelection)
+
+				current_slice_num = int(self.XYSliceEdit.text())
+				self.streamlinesVisibilityCheckbox.setChecked(True)
+				self.SceneManager.visualizeXYSlice(current_slice_num, self.streamlinesVisibilityCheckbox.isChecked())	
+				self.SceneManager.visualizeStreamlines(self.streamlinesVisibilityCheckbox.isChecked())	
+				self.clusterCheckbox.setChecked(False)
+				self.selectTracksByColorCheckbox.setChecked(False)
 	
-			for i in np.arange(self.unique_colors.shape[0]):
-				listItem = QListWidgetItem('')
-				listItem.setBackground(QColor(int(self.unique_colors[i][0] * 255), int(self.unique_colors[i][1] * 255),
-											int(self.unique_colors[i][2] * 255), 200))
-				self.pickColorsListWidget.addItem(listItem)
-
-			self.pickColorsListWidget.setSelectionMode(QAbstractItemView.SingleSelection)
-
-			current_slice_num = int(self.XYSliceEdit.text())
-			self.streamlinesVisibilityCheckbox.setChecked(True)
-			self.SceneManager.visualizeXYSlice(current_slice_num, self.streamlinesVisibilityCheckbox.isChecked())	
-			self.SceneManager.visualizeStreamlines(self.streamlinesVisibilityCheckbox.isChecked())	
-			self.clusterCheckbox.setChecked(False)
-			self.selectTracksByColorCheckbox.setChecked(False)
-   
-			# Always clip streamlines by 5 slices in interactive editing tab
-			self.SceneManager.clipStreamlines(self.streamlinesVisibilityCheckbox.isChecked(), 5, current_slice_num, self.ieTabSelected)
-   
+				# Always clip streamlines by 5 slices in interactive editing tab
+				self.SceneManager.clipStreamlines(self.streamlinesVisibilityCheckbox.isChecked(), 5, current_slice_num, self.ieTabSelected)
+	
+			else:
+				current_slice_num = int(self.XYSliceEdit.text())
+				self.SceneManager.visualizeXYSlice(current_slice_num, False)	
+			
 		if tabIndex == 0:
 			self.ieTabSelected = False
 			self.SceneManager.visualizationTabSelected()
