@@ -10,8 +10,8 @@ The software provides the user with the following options
 6. Save tractograms to disk for loading in the future.
 
 Tractogram based metrics  
-Tool for comparing two tractograms based on a closest neighbor distance metric is available from the GUI.
-Tool for computing Dice overlap between the tractogram and a binary mask is available from the script validate_tractograms.py
+1. Tool for comparing two tractograms based on a closest neighbor distance metric is available from the GUI.  
+2. Tool for computing Dice overlap between the tractogram and a binary mask is available from the script validate_tractograms.py  
 
 ## Installation
 
