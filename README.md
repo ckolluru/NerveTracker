@@ -107,4 +107,6 @@ The user can then select the draw region of interest (ROI) button and then start
 If tracks need to be deleted, two options are available. Either all tracks passing through this ROI can be deleted or only the portions of tracks originating from the ROI can be deleted.
 
 ## Contributions
-If you use this code/software in your own work, please considering citing our paper (currently under review).
+If you use this code/software in your own work, please considering citing our paper.
+
+Chaitanya Kolluru, Naomi Joseph, James Seckler, Farzad Fereidouni, Richard Levenson, Andrew Shoffstall, Michael Jenkins, David Wilson, "NerveTracker: a Python-based software toolkit for visualizing and tracking groups of nerve fibers in serial block-face microscopy with ultraviolet surface excitation images," J. Biomed. Opt. 29(7) 076501 (18 June 2024) https://doi.org/10.1117/1.JBO.29.7.076501
