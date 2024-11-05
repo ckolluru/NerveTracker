@@ -21,7 +21,7 @@ Tractogram based metrics
 2. Navigate to the repository folder
 
 3. Create a conda environment
-```conda create --name tracking --file requirements.txt```
+```conda env create -n tracking -f environment.yml```
 
 4. Activate the environment
 ```conda activate tracking```
